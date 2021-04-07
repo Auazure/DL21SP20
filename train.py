@@ -1,8 +1,15 @@
 import torch
 import torchvision
 from torchvision import transforms
-from PIL import Image # PIL is a library to process images
+from PIL import Image 
 from dataloader import CustomDataset
+import os.path
+
+
+parser = argparse.ArgumentParse()
+parser.add_argument('--checkpoint-dir', type=str)
+args = parser.parse_args()
+os.path.insert(1, args.checkpoint_dir)
 
 # These numbers are mean and std values for channels of natural images.
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -29,9 +36,9 @@ validation_transforms = transforms.Compose([
     transforms.ToTensor(),
     normalize,
 ])
-train_dataset = CustomDataset(PATH, 'train', train_transforms)
-validation_dataset = CustomDataset(PATH, 'val', validation_transforms)
-BATCH_SIZE = 128 # TODO
+train_dataset = CustomDataset(root='/dataset', 'train', train_transforms)
+validation_dataset = CustomDataset(root='/dataset', 'val', validation_transforms)
+BATCH_SIZE = 128 
 
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=1)
 validation_dataloader = torch.utils.data.DataLoader(validation_dataset, batch_size=BATCH_SIZE, num_workers=1)
@@ -52,10 +59,11 @@ def step(loss, optimizer):
     optimizer.step()
 
 
-N_EPOCHS = 1 # TODO
-
+N_EPOCHS = args.epochs 
 
 model = CNN()
+if os.path.exists("baseline.path"):
+    model.load_state_dict(torch.load(args.checkpoint_dir +'/baseline.path'))
 
 criterion = nn.NLLLoss()
 
@@ -63,14 +71,12 @@ optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
 model.train()
 
-
-# if torch.cuda.is_available():
-#     model = model.cuda()
-#     criterion = criterion.cuda()
-#     device = torch.device("cuda:0")
-# else:
-#     device = torch.device("cpu")
-device = xm.xla_device()
+if torch.cuda.is_available():
+    model = model.cuda()
+    criterion = criterion.cuda()
+    device = torch.device("cuda:0")
+else:
+    device = torch.device("cpu")
 model.to(device)
 
 
@@ -83,10 +89,10 @@ pbar = tqdm(range(N_EPOCHS))
 
 for i in pbar:
     print('Current Epoch .{}'.format(i))
-    # total_train_loss = 0.0
-    # total_train_correct = 0.0
-    # total_validation_loss = 0.0
-    # total_validation_correct = 0.0
+    total_train_loss = 0.0
+    total_train_correct = 0.0
+    total_validation_loss = 0.0
+    total_validation_correct = 0.0
 
 
     model.train()
@@ -95,36 +101,35 @@ for i in pbar:
         n+=1
         loss, correct = get_loss_and_correct(model, batch, criterion, device)
         step(loss, optimizer)
-        # total_train_loss += loss.item()
-        # total_train_correct += correct.item()
-        train_losses.append(loss.item())
-        train_accuracies.append(correct.item())
+        total_train_loss += loss.item()
+        total_train_correct += correct.item()
 
-        # if n%20 == 0:
-        #   tot_loss = 0
-        #   tot_acc = 0
-        #   with torch.no_grad():
-        #     for batch in validation_dataloader:
-        #       loss, correct = get_loss_and_correct(model, batch, criterion, device)
-        #       tot_loss += loss.item()
-        #       tot_acc += correct.item()
+    with torch.no_grad():
+        for batch in validation_dataloader:
+            loss, correct = get_loss_and_correct(model, batch, criterion, device)
+            total_validation_loss += loss.item()
+            total_validation_correct += correct.item()
 
-        #       # total_validation_loss += loss.item()
-        #       # total_validation_correct += correct.item()
-        #   mean_loss = tot_loss/len(validation_dataset)
-        #   mean_acc = tot_acc/len(validation_dataset)
-        #   validation_losses.append(mean_loss)
-        #   validation_accuracies.append(mean_acc)
-        #   print(mean_acc)
-    # mean_train_loss = total_train_loss / len(train_dataset)
-    # train_accuracy = total_train_correct / len(train_dataset)
+        
+    mean_train_loss = total_train_loss / len(train_dataset)
+    train_accuracy = total_train_correct / len(train_dataset)
 
-    # mean_validation_loss = total_validation_loss / len(validation_dataset)
-    # validation_accuracy = total_validation_correct / len(validation_dataset)
-    # print('Train Loss: {}, Vald Loss: {}'.format(mean_train_loss, mean_validation_loss))
-    # train_losses.append(mean_train_loss)
-    # validation_losses.append(mean_validation_loss)
-    # train_accuracies.append(train_accuracy)
-    # validation_accuracies.append(validation_accuracy)
-    # print('Train Accuracy: {}, Vald Accuracy: {}'.format(round(train_accuracy,3), round(validation_accuracy,3)))
-    # pbar.set_postfix({'train_loss': mean_train_loss, 'validation_loss': mean_validation_loss, 'train_accuracy': train_accuracy, 'validation_accuracy': validation_accuracy})
+    mean_validation_loss = total_validation_loss / len(validation_dataset)
+    validation_accuracy = total_validation_correct / len(validation_dataset)
+    print('Epoch: {}, Train Loss: {}, Vald Loss: {}'.format(i+1, mean_train_loss, mean_validation_loss))
+    train_losses.append(mean_train_loss)
+    validation_losses.append(mean_validation_loss)
+    train_accuracies.append(train_accuracy)
+    validation_accuracies.append(validation_accuracy)
+    print('Epoch: {}, Train Accuracy: {}, Vald Accuracy: {}'.format(i+1, round(train_accuracy,3), round(validation_accuracy,3)))
+    pbar.set_postfix({'train_loss': mean_train_loss, 'validation_loss': mean_validation_loss, 'train_accuracy': train_accuracy, 'validation_accuracy': validation_accuracy})
+    
+    
+    
+    
+    
+print('Finish Training')
+os.makedirs(args.checkpoint_dir, exist_ok=True)
+torch.save(model.state_dict(), os.path.join(args.checkpoint_dir, 'baseline.path'))
+print("Saved checkpoint to {os.path.join(args.checkpoint_dir, 'baseline.path'}}")
+      
