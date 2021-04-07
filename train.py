@@ -3,6 +3,7 @@ import torchvision
 from torchvision import transforms
 from PIL import Image 
 from dataloader import CustomDataset
+from baseline import CNN
 import os.path
 
 
