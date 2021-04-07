@@ -42,7 +42,7 @@ validation_transforms = transforms.Compose([
     normalize,
 ])
 # path = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
-path = '
+path = ''
 train_dataset = CustomDataset(root=path+'/dataset', split='train', transform=train_transforms)
 validation_dataset = CustomDataset(root=path+'/dataset', split='val', transform=validation_transforms)
 BATCH_SIZE = 128 
