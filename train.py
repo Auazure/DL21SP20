@@ -63,8 +63,8 @@ def step(loss, optimizer):
 N_EPOCHS = args.epochs 
 
 model = CNN()
-if os.path.exists("baseline.path"):
-    model.load_state_dict(torch.load(args.checkpoint_dir +'/baseline.path'))
+if os.path.exists("baseline.pth"):
+    model.load_state_dict(torch.load(args.checkpoint_dir +'/baseline.pth'))
 
 criterion = nn.NLLLoss()
 
