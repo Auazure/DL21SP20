@@ -1,16 +1,20 @@
 import torch
+import torch.nn as nn
 import torchvision
 from torchvision import transforms
 from PIL import Image 
 from dataloader import CustomDataset
 from baseline import CNN
-import os.path
+import os
+import argparse
+import sys
 
 
-parser = argparse.ArgumentParse()
+parser = argparse.ArgumentParser()
 parser.add_argument('--checkpoint-dir', type=str)
+parser.add_argument('--epochs', type=int)
 args = parser.parse_args()
-os.path.insert(1, args.checkpoint_dir)
+sys.path.insert(1, args.checkpoint_dir)
 
 # These numbers are mean and std values for channels of natural images.
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -37,8 +41,10 @@ validation_transforms = transforms.Compose([
     transforms.ToTensor(),
     normalize,
 ])
-train_dataset = CustomDataset(root='/dataset', 'train', train_transforms)
-validation_dataset = CustomDataset(root='/dataset', 'val', validation_transforms)
+# path = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
+path = '
+train_dataset = CustomDataset(root=path+'/dataset', split='train', transform=train_transforms)
+validation_dataset = CustomDataset(root=path+'/dataset', split='val', transform=validation_transforms)
 BATCH_SIZE = 128 
 
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=1)
