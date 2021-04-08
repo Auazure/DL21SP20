@@ -16,7 +16,6 @@ class CNN(torch.nn.Module):
 
         self.cl0 = nn.Conv2d(in_channels=3, out_channels=128, kernel_size=3, stride=2)
         self.cl1 = nn.Conv2d(in_channels=128, out_channels=self.res_size, kernel_size=3, stride=2)
-        self.cl2 = nn.Conv2d(in_channels=self.res_size, out_channels=self.res_size, 
         self.cl2 = nn.Conv2d(in_channels=self.res_size, out_channels=self.res_size, kernel_size=3)
 
         self.pre_block = nn.Sequential(self.cl0, self.relu,
