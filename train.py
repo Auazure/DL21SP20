@@ -129,7 +129,7 @@ for i in range(N_EPOCHS):
     train_accuracies.append(train_accuracy)
     validation_accuracies.append(validation_accuracy)
     print('Epoch: {}, Train Accuracy: {}, Vald Accuracy: {}'.format(i+1, round(train_accuracy,3), round(validation_accuracy,3)))
-    pbar.set_postfix({'train_loss': mean_train_loss, 'validation_loss': mean_validation_loss, 'train_accuracy': train_accuracy, 'validation_accuracy': validation_accuracy})
+#     pbar.set_postfix({'train_loss': mean_train_loss, 'validation_loss': mean_validation_loss, 'train_accuracy': train_accuracy, 'validation_accuracy': validation_accuracy})
     
     
     
