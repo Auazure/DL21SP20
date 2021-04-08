@@ -16,31 +16,21 @@ class CNN(torch.nn.Module):
 
         self.cl0 = nn.Conv2d(in_channels=3, out_channels=128, kernel_size=3, stride=2)
         self.cl1 = nn.Conv2d(in_channels=128, out_channels=self.res_size, kernel_size=3, stride=2)
-        self.cl2 = nn.Conv2d(in_channels=self.res_size, out_channels=self.res_size, kernel_size=3, padding=1)
-        self.cl3 = nn.Conv2d(in_channels=self.res_size, out_channels=self.res_size, kernel_size=3, padding=1)
-        self.cl4 = nn.Conv2d(in_channels=self.res_size, out_channels=self.res_size, kernel_size=3, padding=1)
-
-        self.cl8 = nn.Conv2d(in_channels=self.res_size, out_channels=self.res_size, kernel_size=3)
-
-        self.bn1 = nn.BatchNorm2d(self.res_size)
-        self.bn2 = nn.BatchNorm2d(self.res_size)
-        self.bn3 = nn.BatchNorm2d(self.res_size)
-
+        self.cl2 = nn.Conv2d(in_channels=self.res_size, out_channels=self.res_size, 
+        self.cl2 = nn.Conv2d(in_channels=self.res_size, out_channels=self.res_size, kernel_size=3)
 
         self.pre_block = nn.Sequential(self.cl0, self.relu,
                                        self.pool1,self.relu,
                                        self.cl1, self.pool2)
-        self.resblock1 = nn.Sequential(self.cl2,
-                                       self.pool2,
-                                       self.bn1)
-        self.resblock2 = nn.Sequential(self.cl3,
-                                       self.pool2,
-                                       self.bn2)
-        self.resblock3 = nn.Sequential(self.cl4,
-                                       self.pool2,
-                                       self.bn3)
+        
+        self.resblock1 = self._makeresblcok()
+        self.resblock2 = self._makeresblcok()
+        self.resblock3 = self._makeresblcok()
+        self.resblock4 = self._makeresblcok()
+        self.resblock5 = self._makeresblcok()
+        self.resblock6 = self._makeresblcok()
 
-        self.final_block = nn.Sequential(self.cl8,
+        self.final_block = nn.Sequential(self.cl2,
                                          self.relu,
                                          self.avgpool)
 
@@ -52,6 +42,13 @@ class CNN(torch.nn.Module):
 
         self.output = F.log_softmax
 
+    def _makeresblcok(self):
+        cnn = nn.Conv2d(in_channels=self.res_size, out_channels=self.res_size, kernel_size=3, padding=1)
+        pool = self.pool2
+        norm = nn.BatchNorm2d(self.res_size)
+        seq = nn.Sequential(cnn, pool, norm)
+        return seq        
+        
     def forward(self, x):
         B, _, _, _ = x.shape
         x = self.pre_block(x)
@@ -62,7 +59,12 @@ class CNN(torch.nn.Module):
         x = F.relu(x)
         x = self.resblock3(x)+x
         x = F.relu(x)
-
+        x = self.resblock4(x)+x
+        x = F.relu(x)
+        x = self.resblock5(x)+x
+        x = F.relu(x)
+        x = self.resblock6(x)+x
+        x = F.relu(x)
         x = self.final_block(x)
 
         x = F.relu(x)

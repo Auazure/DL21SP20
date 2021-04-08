@@ -74,7 +74,7 @@ if os.path.exists("baseline.pth"):
 
 criterion = nn.NLLLoss()
 
-optimizer = torch.optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
 
 model.train()
 
