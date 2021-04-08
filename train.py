@@ -50,7 +50,7 @@ BATCH_SIZE = 128
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=1)
 validation_dataloader = torch.utils.data.DataLoader(validation_dataset, batch_size=BATCH_SIZE, num_workers=1)
 
-from tqdm.notebook import tqdm
+# from tqdm.notebook import tqdm
 
 def get_loss_and_correct(model, batch, criterion, device):
     x, y = batch
@@ -92,9 +92,9 @@ train_accuracies = []
 validation_losses = []
 validation_accuracies = []
 
-pbar = tqdm(range(N_EPOCHS))
+# pbar = tqdm(range(N_EPOCHS))
 
-for i in pbar:
+for i in range(N_EPOCHS):
     print('Current Epoch .{}'.format(i))
     total_train_loss = 0.0
     total_train_correct = 0.0
@@ -104,7 +104,7 @@ for i in pbar:
 
     model.train()
     n=0
-    for batch in tqdm(train_dataloader, leave=False):
+    for batch in train_dataloader:
         n+=1
         loss, correct = get_loss_and_correct(model, batch, criterion, device)
         step(loss, optimizer)
