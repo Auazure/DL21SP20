@@ -62,7 +62,7 @@ if torch.cuda.is_available():
 else:
     device = torch.device("cpu")
     
-if os.path.exists("simclr.pth"):
+if os.path.exists(args.checkpoint_dir+"/simclr.pth"):
     print('Loading previous model')
     model.load_state_dict(torch.load(args.checkpoint_dir +'/simclr.pth'))
 
