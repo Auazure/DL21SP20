@@ -61,7 +61,10 @@ if torch.cuda.is_available():
     device = torch.device("cuda:0")
 else:
     device = torch.device("cpu")
-    
+
+check = os.path.exists(args.checkpoint_dir+"/simclr.pth")
+print(check)
+
 if os.path.exists(args.checkpoint_dir+"/simclr.pth"):
     print('Loading previous model')
     model.load_state_dict(torch.load(args.checkpoint_dir +'/simclr.pth'))
@@ -79,7 +82,7 @@ for i in range(EPOCHS):
     
     
     loss_epoch = 0
-    for step, ((x_i, x_j), _) in enumerate(train_loader):
+    for step, ((x_i, x_j), _) in enumerate(train_dataloader):
         optimizer.zero_grad()
         x_i = x_i.cuda(non_blocking=True)
         x_j = x_j.cuda(non_blocking=True)
