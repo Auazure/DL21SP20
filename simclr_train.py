@@ -21,8 +21,8 @@ parser.add_argument('--epochs', type=int)
 parser.add_argument('--temperature', type=int, default=1)
 
 args = parser.parse_args()
-sys.path.insert(1, args.checkpoint_dir)
-path = ''
+# sys.path.insert(1, args.checkpoint_dir)
+# path = ''
 
 train_dataset = CustomDataset(root=path+'/dataset', split='unlabeled', transform=TransformsSimCLR(96))
 BATCH_SIZE = 256 
@@ -61,7 +61,8 @@ if torch.cuda.is_available():
     device = torch.device("cuda:0")
 else:
     device = torch.device("cpu")
-
+p = args.checkpoint_dir+"/simclr.pth"
+print(p)
 check = os.path.exists(args.checkpoint_dir+"/simclr.pth")
 print(check)
 
