@@ -45,9 +45,9 @@ def train(train_loader, model, criterion, optimizer, args):
         optimizer.step()
         if step%100==0:
             print('Step: {}, Train Loss: {}'.format(step, loss.item()))
-        os.makedirs(args.checkpoint_dir, exist_ok=True)
-        torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
-        torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
+            os.makedirs(args.checkpoint_dir, exist_ok=True)
+            torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
+            torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
         loss_epoch += loss.item()
     return loss_epoch
 
@@ -77,8 +77,33 @@ for i in range(EPOCHS):
     total_validation_loss = 0.0
     total_validation_correct = 0.0
     
-    lr = optimizer.param_groups[0]["lr"]
-    loss_epoch = train(train_dataloader, model, criterion, optimizer, args)
+    
+    loss_epoch = 0
+    for step, ((x_i, x_j), _) in enumerate(train_loader):
+        optimizer.zero_grad()
+        x_i = x_i.cuda(non_blocking=True)
+        x_j = x_j.cuda(non_blocking=True)
+
+        # positive pair, with encoding
+        h_i, h_j, z_i, z_j = model(x_i, x_j)
+
+        loss = criterion(z_i, z_j)
+        loss.backward()
+
+        optimizer.step()
+        if step%100==0:
+            print('Step: {}, Train Loss: {}'.format(step, loss.item()))
+            os.makedirs(args.checkpoint_dir, exist_ok=True)
+            torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
+            torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
+        loss_epoch += loss.item()
+    
+    
+    
+    
+    
+    
+#     loss_epoch = train(train_dataloader, model, criterion, optimizer, args)
     avg_loss = loss_epoch/len(train_dataloader)
     
     print('Epoch: {}, Train Loss: {}'.format(i+1, avg_loss))
