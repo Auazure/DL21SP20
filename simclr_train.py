@@ -45,7 +45,7 @@ def train(train_loader, model, criterion, optimizer, args):
         optimizer.step()
         if step%100==0:
             print('Step: {}, Train Loss: {}'.format(step, loss.item()))
-            os.makedirs(args.checkpoint_dir, exist_ok=True)
+#             os.makedirs(args.checkpoint_dir, exist_ok=True)
             torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
             torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
         loss_epoch += loss.item()
@@ -115,7 +115,7 @@ for i in range(EPOCHS):
 
 
 print('Finish Training')
-os.makedirs(args.checkpoint_dir, exist_ok=True)
+# os.makedirs(args.checkpoint_dir, exist_ok=True)
 torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
 torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
 print("Saved checkpoint to {os.path.join(args.checkpoint_dir, 'simclr.path')}")
