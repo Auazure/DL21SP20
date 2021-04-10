@@ -61,14 +61,15 @@ if torch.cuda.is_available():
     device = torch.device("cuda:0")
 else:
     device = torch.device("cpu")
-p = args.checkpoint_dir+"/simclr.pth"
+p = args.checkpoint_dir+"/simclr_encoder.pth"
 print(p)
-check = os.path.exists(args.checkpoint_dir+"/simclr.pth")
+check = os.path.exists(args.checkpoint_dir+"/simclr_encoder.pth")
 print(check)
 
-if os.path.exists(args.checkpoint_dir+"/simclr.pth"):
+if os.path.exists(args.checkpoint_dir+"/simclr_encoder.pth"):
     print('Loading previous model')
-    model.load_state_dict(torch.load(args.checkpoint_dir +'/simclr.pth'))
+    model.encoder.load_state_dict(torch.load(args.checkpoint_dir +'/simclr_encoder.pth'))
+    model.projector.load_state_dict(torch.load(args.checkpoint_dir +'/simclr_projector.pth'))
 
 model = model.to(device)
 
