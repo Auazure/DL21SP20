@@ -29,7 +29,7 @@ BATCH_SIZE = 256
 
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=1)
 
-def train(train_loader, model, criterion, optimizer):
+def train(train_loader, model, criterion, optimizer, args):
     loss_epoch = 0
     for step, ((x_i, x_j), _) in enumerate(train_loader):
         optimizer.zero_grad()
@@ -45,7 +45,9 @@ def train(train_loader, model, criterion, optimizer):
         optimizer.step()
         if step%100==0:
             print('Step: {}, Train Loss: {}'.format(step, loss.item()))
-
+        os.makedirs(args.checkpoint_dir, exist_ok=True)
+        torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
+        torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
         loss_epoch += loss.item()
     return loss_epoch
 
@@ -76,13 +78,11 @@ for i in range(EPOCHS):
     total_validation_correct = 0.0
     
     lr = optimizer.param_groups[0]["lr"]
-    loss_epoch = train(train_dataloader, model, criterion, optimizer)
+    loss_epoch = train(train_dataloader, model, criterion, optimizer, args)
     avg_loss = loss_epoch/len(train_dataloader)
     
     print('Epoch: {}, Train Loss: {}'.format(i+1, avg_loss))
-    os.makedirs(args.checkpoint_dir, exist_ok=True)
-    torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
-    torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
+
 
 
 print('Finish Training')
