@@ -80,8 +80,8 @@ for i in range(EPOCHS):
 
 print('Finish Training')
 os.makedirs(args.checkpoint_dir, exist_ok=True)
-    torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
-    torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
+torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
+torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
 print("Saved checkpoint to {os.path.join(args.checkpoint_dir, 'simclr.path')}")
 
 
