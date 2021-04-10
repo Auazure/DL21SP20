@@ -7,6 +7,8 @@ from simclr.modules import NT_Xent, get_resnet
 from simclr.modules.transformations import TransformsSimCLR
 from simclr.modules.sync_batchnorm import convert_model
 from baseline import CNN
+from dataloader import CustomDataset
+
 import os
 import argparse
 import sys
