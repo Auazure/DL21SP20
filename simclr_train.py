@@ -43,6 +43,8 @@ def train(train_loader, model, criterion, optimizer):
         loss.backward()
 
         optimizer.step()
+        if step%100==0:
+            print('Step: {}, Train Loss: {}'.format(step, loss.item()))
 
         loss_epoch += loss.item()
     return loss_epoch
@@ -59,6 +61,7 @@ else:
     device = torch.device("cpu")
     
 if os.path.exists("simclr.pth"):
+    print('Loading previous model')
     model.load_state_dict(torch.load(args.checkpoint_dir +'/simclr.pth'))
 
 model = model.to(device)
@@ -74,8 +77,9 @@ for i in range(EPOCHS):
     
     lr = optimizer.param_groups[0]["lr"]
     loss_epoch = train(train_dataloader, model, criterion, optimizer)
-
-    print('Epoch: {}, Train Loss: {}'.format(i+1, loss_epoch))
+    avg_loss = loss_epoch/len(train_dataloader)
+    
+    print('Epoch: {}, Train Loss: {}'.format(i+1, avg_loss))
     os.makedirs(args.checkpoint_dir, exist_ok=True)
     torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
     torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
