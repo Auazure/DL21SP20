@@ -1,5 +1,6 @@
 from torch import nn
 import torch.nn.functional as F
+import torchvision
 import torch
 
 from simclr import SimCLR
