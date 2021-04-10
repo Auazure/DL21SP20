@@ -72,7 +72,7 @@ for i in range(EPOCHS):
     lr = optimizer.param_groups[0]["lr"]
     loss_epoch = train(train_dataloader, model, criterion, optimizer)
 
-    print('Epoch: {}, Train Loss: {}'.format(i+1, loss_epoch)
+    print('Epoch: {}, Train Loss: {}'.format(i+1, loss_epoch))
     os.makedirs(args.checkpoint_dir, exist_ok=True)
     torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
     torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
