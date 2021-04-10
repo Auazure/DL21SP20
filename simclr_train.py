@@ -98,8 +98,8 @@ for i in range(EPOCHS):
         if step%100==0:
             print('Step: {}, Train Loss: {}'.format(step, loss.item()))
 #             os.makedirs(args.checkpoint_dir, exist_ok=True)
-            torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
-            torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
+            torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.pth'))
+            torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.pth'))
         loss_epoch += loss.item()
     
     
@@ -116,8 +116,8 @@ for i in range(EPOCHS):
 
 print('Finish Training')
 # os.makedirs(args.checkpoint_dir, exist_ok=True)
-torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
-torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
+torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.pth'))
+torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.pth'))
 print("Saved checkpoint to {os.path.join(args.checkpoint_dir, 'simclr.path')}")
 
 
