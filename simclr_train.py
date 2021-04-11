@@ -51,25 +51,26 @@ def train(train_loader, model, criterion, optimizer, args):
         loss_epoch += loss.item()
     return loss_epoch
 
-encoder = torchvision.models.resnet50(pretrained=False)
+encoder = torchvision.models.resnet18(pretrained=False)
 criterion = NT_Xent(BATCH_SIZE, args.temperature, 1)
 model = SimCLR(encoder, 256, 2048)
-optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+# optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
 
 if torch.cuda.is_available():
     criterion = criterion.cuda()
     device = torch.device("cuda:0")
 else:
     device = torch.device("cpu")
-p = args.checkpoint_dir+"/simclr_encoder.pth"
+p = args.checkpoint_dir+"/simclr_encoder_18.pth"
 print(p)
-check = os.path.exists(args.checkpoint_dir+"/simclr_encoder.pth")
+check = os.path.exists(args.checkpoint_dir+"/simclr_encoder_18.pth")
 print(check)
 
 if os.path.exists(args.checkpoint_dir+"/simclr_encoder.pth"):
     print('Loading previous model')
-    model.encoder.load_state_dict(torch.load(args.checkpoint_dir +'/simclr_encoder.pth'))
-    model.projector.load_state_dict(torch.load(args.checkpoint_dir +'/simclr_projector.pth'))
+    model.encoder.load_state_dict(torch.load(args.checkpoint_dir +'/simclr_encoder_18.pth'))
+    model.projector.load_state_dict(torch.load(args.checkpoint_dir +'/simclr_projector_18.pth'))
 
 model = model.to(device)
 
