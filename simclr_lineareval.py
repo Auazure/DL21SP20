@@ -17,8 +17,8 @@ args = parser.parse_args()
 
 # path = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
 path = ''
-train_dataset = CustomDataset(root=path + 'dataset', split='train', transform=TransformsSimCLR(96))
-validation_dataset = CustomDataset(root=path + 'dataset', split='val', transform=TransformsSimCLR(96))
+train_dataset = CustomDataset(root=path + '/dataset', split='train', transform=TransformsSimCLR(96))
+validation_dataset = CustomDataset(root=path + '/dataset', split='val', transform=TransformsSimCLR(96))
 BATCH_SIZE = 128
 
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=1)
@@ -127,5 +127,5 @@ for i in range(N_EPOCHS):
 
 print('Finish Training')
 os.makedirs(args.checkpoint_dir, exist_ok=True)
-torch.save(model.state_dict(), os.path.join(args.checkpoint_dir, 'linearEval.path'))
-print("Saved checkpoint to {os.path.join(args.checkpoint_dir, 'linearEval.path'}}")
+torch.save(model.state_dict(), os.path.join(args.checkpoint_dir, 'simiclr_linear_eval.path'))
+print("Saved checkpoint to {os.path.join(args.checkpoint_dir, 'simiclr_linear_eval.path'}}")

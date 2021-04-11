@@ -4,8 +4,8 @@
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl20
 #SBATCH --time=1:00:00
-#SBATCH --output=train_logs/baseline_%j.out
-#SBATCH --error=train_logs/baseline_%j.err
+#SBATCH --output=train_logs/simiclr_linear_eval_%j.out
+#SBATCH --error=train_logs/simiclr_linear_eval_%j.err
 #SBATCH --exclusive
 #SBATCH --requeue 
 
