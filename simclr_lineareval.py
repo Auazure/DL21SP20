@@ -81,8 +81,6 @@ def get_loss_and_correct(encoder, model, batch, criterion, device):
         h = encoder(x)
     h = h.detach()
     y_scores = model(h)
-    print(y_scores)
-    print(y)
     loss = criterion(y_scores, y)
     return loss, torch.sum(torch.argmax(y_scores, dim=1) == y)
 
