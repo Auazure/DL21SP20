@@ -1,12 +1,8 @@
 import torch
 import torch.nn as nn
 import torchvision
-import numpy as np
 from torchvision import transforms
 from dataloader import CustomDataset
-from simclr import SimCLR
-from simclr.modules import LogisticRegression
-from simclr.modules.transformations import TransformsSimCLR
 import os
 import argparse
 
@@ -23,8 +19,10 @@ validation_transforms = transforms.Compose([
     transforms.ToTensor(),
 ])
 
-# path = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
 path = ''
+# train_dataset = CustomDataset(root=path, split='train', transform=train_transforms)
+# validation_dataset = CustomDataset(root=path, split='val', transform=validation_transforms)
+
 train_dataset = CustomDataset(root=path + '/dataset', split='train', transform=train_transforms)
 validation_dataset = CustomDataset(root=path + '/dataset', split='val', transform=validation_transforms)
 BATCH_SIZE = 128
@@ -35,56 +33,30 @@ validation_dataloader = torch.utils.data.DataLoader(validation_dataset, batch_si
 
 # from tqdm.notebook import tqdm
 
-def get_loss_and_correct(encoder, model, batch, criterion, device):
-    x, y = batch
-    x = x.to(device)
-    y = y.to(device)
-
-    # get encoding
-    # with torch.no_grad():
-    #     h, _, z, _ = simclr_model(x, x)
-    # h = h.detach()
-    # feature_vector = []
-    # labels_vector = []
-    # feature_vector.extend(h.cpu().detach().numpy())
-    # labels_vector.extend(y.numpy())
-    # feature_vector = np.array(feature_vector)
-    # labels_vector = np.array(labels_vector)
-    #
-    #
-    # labels_vector_hat = model(feature_vector)
-    # loss = criterion(labels_vector_hat, labels_vector)
-    with torch.no_grad():
-        h = encoder(x)
-    h = h.detach()
-    y_hat = model(h)
-    loss = criterion(y_hat, y)
-
-    return loss, torch.sum(torch.argmax(y_hat, dim=1) == y)
-
-
-def step(loss, optimizer):
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-
 if torch.cuda.is_available():
     device = torch.device("cuda:0")
 else:
     device = torch.device("cpu")
 
 # load pre-trained model from checkpoint
-assert os.path.join(args.checkpoint_dir, "simclr_encoder.pth")
-encoder = torchvision.models.resnet18(pretrained=False)
-simclr_model = SimCLR(encoder, 1024, 512)
-simclr_model.to(device)
-simclr_model.encoder.load_state_dict(torch.load(os.path.join(args.checkpoint_dir, "simclr_encoder.pth")))
-simclr_model.projector.load_state_dict(torch.load(os.path.join(args.checkpoint_dir, "simclr_projector.pth")))
-simclr_model.eval()
+# assert os.path.join(args.checkpoint_dir, "simclr_encoder.pth")
+encoder = torchvision.models.resnet18(pretrained=True)
+encoder.to(device)
+# encoder.load_state_dict(torch.load(os.path.join(args.checkpoint_dir, "simclr_encoder.pth")))
 
+# N_EPOCHS = 1
 N_EPOCHS = args.epochs
 
-model = LogisticRegression(simclr_model.n_features, 128)
+class LogisticRegression(torch.nn.Module):
+    def __init__(self, input_dim, output_dim):
+        super(LogisticRegression, self).__init__()
+        self.linear = torch.nn.Linear(input_dim, output_dim)
+
+    def forward(self, x):
+        outputs = self.linear(x)
+        return outputs
+
+model = LogisticRegression(1000, 800)
 criterion = nn.CrossEntropyLoss()
 criterion.to(device)
 
@@ -98,8 +70,23 @@ train_accuracies = []
 validation_losses = []
 validation_accuracies = []
 
-# pbar = tqdm(range(N_EPOCHS))
 
+def get_loss_and_correct(encoder, model, batch, criterion, device):
+    x, y = batch
+    x = x.to(device)
+    y = y.to(torch.long).to(device)
+
+    # get encoding
+    with torch.no_grad():
+        h = encoder(x)
+    h = h.detach()
+    y_scores = model(h)
+    print(y_scores)
+    print(y)
+    loss = criterion(y_scores, y)
+    return loss, torch.sum(torch.argmax(y_scores, dim=1) == y)
+
+# pbar = tqdm(range(N_EPOCHS))
 for i in range(N_EPOCHS):
     print('Current Epoch .{}'.format(i))
     total_train_loss = 0.0
@@ -111,14 +98,16 @@ for i in range(N_EPOCHS):
     n = 0
     for batch in train_dataloader:
         n += 1
-        loss, correct = get_loss_and_correct(simclr_model.encoder, model, batch, criterion, device)
-        step(loss, optimizer)
+        loss, correct = get_loss_and_correct(encoder, model, batch, criterion, device)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
         total_train_loss += loss.item()
         total_train_correct += correct.item()
 
     with torch.no_grad():
         for batch in validation_dataloader:
-            loss, correct = get_loss_and_correct(simclr_model.encoder, model, batch, criterion, device)
+            loss, correct = get_loss_and_correct(encoder, model, batch, criterion, device)
             total_validation_loss += loss.item()
             total_validation_correct += correct.item()
 
