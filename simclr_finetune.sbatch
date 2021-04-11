@@ -29,5 +29,5 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev20
-python simclr_finetune.py --checkpoint-dir $HOME/DL21SP20/checkpoints/simclr --epochs=1
+python simclr_finetune.py --checkpoint-dir $HOME/DL21SP20/checkpoints/simclr --epochs=20
 "
