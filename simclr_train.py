@@ -53,7 +53,7 @@ def train(train_loader, model, criterion, optimizer, args):
 
 encoder = torchvision.models.resnet18(pretrained=False)
 criterion = NT_Xent(BATCH_SIZE, args.temperature, 1)
-model = SimCLR(encoder, 256, 2048)
+model = SimCLR(encoder, 1024, 512)
 # optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
 optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
 
