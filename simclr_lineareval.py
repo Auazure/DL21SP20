@@ -64,7 +64,7 @@ else:
 # load pre-trained model from checkpoint
 assert os.path.join(args.checkpoint_dir, "simclr_encoder.pth")
 encoder = torchvision.models.resnet50(pretrained=False)
-simclr_model = SimCLR(encoder, 1024, 512)
+simclr_model = SimCLR(encoder, 256, 2048)
 simclr_model.to(device)
 simclr_model.encoder.load_state_dict(torch.load(os.path.join(args.checkpoint_dir, "simclr_encoder.pth")))
 simclr_model.projector.load_state_dict(torch.load(os.path.join(args.checkpoint_dir, "simclr_projector.pth")))
