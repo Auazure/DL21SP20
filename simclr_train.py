@@ -67,7 +67,7 @@ print(p)
 check = os.path.exists(args.checkpoint_dir+"/simclr_encoder_18.pth")
 print(check)
 
-if os.path.exists(args.checkpoint_dir+"/simclr_encoder.pth"):
+if os.path.exists(args.checkpoint_dir+"/simclr_encoder_18.pth"):
     print('Loading previous model')
     model.encoder.load_state_dict(torch.load(args.checkpoint_dir +'/simclr_encoder_18.pth'))
     model.projector.load_state_dict(torch.load(args.checkpoint_dir +'/simclr_projector_18.pth'))
