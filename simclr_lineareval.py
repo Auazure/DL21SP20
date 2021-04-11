@@ -39,9 +39,12 @@ else:
     device = torch.device("cpu")
 
 # load pre-trained model from checkpoint
-# assert os.path.join(args.checkpoint_dir, "simclr_encoder.pth")
 encoder = torchvision.models.resnet18(pretrained=True)
+# assert os.path.join(args.checkpoint_dir, "simclr_encoder.pth")
+# encoder.load_state_dict(torch.load(os.path.join(args.checkpoint_dir, "simclr_encoder.pth")))
 encoder.to(device)
+encoder.eval()
+
 # encoder.load_state_dict(torch.load(os.path.join(args.checkpoint_dir, "simclr_encoder.pth")))
 
 # N_EPOCHS = 1
