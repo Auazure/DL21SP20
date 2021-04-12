@@ -17,15 +17,17 @@ import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--checkpoint-dir', type=str, default='')
+parser.add_argument('--model-name', type=str, default='/simclr')
 parser.add_argument('--epochs', type=int, default=1)
 parser.add_argument('--temperature', type=int, default=1)
 
 args = parser.parse_args()
 # sys.path.insert(1, args.checkpoint_dir)
-# path = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
-path = ''
+path = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
+# path = ''
 train_dataset = CustomDataset(root=path+'/dataset', split='unlabeled', transform=TransformsSimCLR(96))
 BATCH_SIZE = 256 
+print(len(train_dataset))
 
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=1)
 
@@ -62,15 +64,15 @@ if torch.cuda.is_available():
     device = torch.device("cuda:0")
 else:
     device = torch.device("cpu")
-p = args.checkpoint_dir+"/simclr_encoder_18.pth"
-print(p)
-check = os.path.exists(args.checkpoint_dir+"/simclr_encoder_18.pth")
+# p = args.checkpoint_dir+args.model_name+
+# print(p)
+check = os.path.exists(args.checkpoint_dir+args.model_name+"_encoder_18.pth")
 print(check)
 
 if os.path.exists(args.checkpoint_dir+"/simclr_encoder_18.pth"):
     print('Loading previous model')
-    model.encoder.load_state_dict(torch.load(args.checkpoint_dir +'/simclr_encoder_18.pth'))
-    model.projector.load_state_dict(torch.load(args.checkpoint_dir +'/simclr_projector_18.pth'))
+    model.encoder.load_state_dict(torch.load(args.checkpoint_dir +args.model_name+"_encoder_18.pth"))
+    model.projector.load_state_dict(torch.load(args.checkpoint_dir +args.model_name+"_projector_18.pth"))
 
 model = model.to(device)
 
@@ -100,8 +102,8 @@ for i in range(EPOCHS):
         if step%100==0:
             print('Step: {}, Train Loss: {}'.format(step, loss.item()))
 #             os.makedirs(args.checkpoint_dir, exist_ok=True)
-            torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder_18.pth'))
-            torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector_18.pth'))
+            torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, args.model_name, "_encoder_18.pth"))
+            torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, args.model_name, "_projector_18.pth"))
         loss_epoch += loss.item()
     
     
@@ -118,9 +120,9 @@ for i in range(EPOCHS):
 
 print('Finish Training')
 # os.makedirs(args.checkpoint_dir, exist_ok=True)
-torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder_18.pth'))
-torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector_18.pth'))
-print("Saved checkpoint to {os.path.join(args.checkpoint_dir, 'simclr.pth')}")
+torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir,args.model_name, "_encoder_18.pth"))
+torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, args.model_name, "_projector_18.pth"))
+print("Saved checkpoint to {os.path.join(args.checkpoint_dir, args.model_name, '.pth')}")
 
 
 

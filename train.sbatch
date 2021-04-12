@@ -4,8 +4,8 @@
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl20
 #SBATCH --time=1:00:00
-#SBATCH --output=train_logs/baseline_%j.out
-#SBATCH --error=train_logs/baseline_%j.err
+#SBATCH --output=train_logs/simclr_%j.out
+#SBATCH --error=train_logs/simclr_%j.err
 #SBATCH --exclusive
 #SBATCH --requeue 
 
@@ -29,6 +29,6 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python train.py --checkpoint-dir $HOME/checkpoints/baseline --epochs=1
+python simclr_train.py --checkpoint-dir $HOME/checkpoints/simclr_res --model-name simclr_pretrain --epochs=1
 "
 #python eval.py --checkpoint-path $HOME/checkpoints/models/baseline.pth
