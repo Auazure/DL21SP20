@@ -69,7 +69,7 @@ else:
 check = os.path.exists(args.checkpoint_dir+args.model_name+"_encoder_18.pth")
 print(check)
 
-if os.path.exists(args.checkpoint_dir+args.model_name+"/simclr_encoder_18.pth"):
+if os.path.exists(args.checkpoint_dir+args.model_name+"_encoder_18.pth"):
     print('Loading previous model')
     model.encoder.load_state_dict(torch.load(args.checkpoint_dir +args.model_name+"_encoder_18.pth"))
     model.projector.load_state_dict(torch.load(args.checkpoint_dir +args.model_name+"_projector_18.pth"))
@@ -120,8 +120,8 @@ for i in range(EPOCHS):
 
 print('Finish Training')
 # os.makedirs(args.checkpoint_dir, exist_ok=True)
-torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir,args.model_name, "_encoder_18.pth"))
-torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, args.model_name, "_projector_18.pth"))
+torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir,args.model_name+ "_encoder_18.pth"))
+torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, args.model_name+"_projector_18.pth"))
 print("Saved checkpoint to {os.path.join(args.checkpoint_dir, args.model_name, '.pth')}")
 
 
