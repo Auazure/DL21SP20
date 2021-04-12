@@ -23,8 +23,8 @@ parser.add_argument('--temperature', type=int, default=1)
 
 args = parser.parse_args()
 # sys.path.insert(1, args.checkpoint_dir)
-path = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
-# path = ''
+# path = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
+path = ''
 train_dataset = CustomDataset(root=path+'/dataset', split='unlabeled', transform=TransformsSimCLR(96))
 BATCH_SIZE = 256 
 print(len(train_dataset))
