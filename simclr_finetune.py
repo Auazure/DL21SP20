@@ -45,21 +45,17 @@ encoder = torchvision.models.resnet18(pretrained=True)
 # N_EPOCHS = 1
 N_EPOCHS = args.epochs
 
-class LogisticRegressionFineTune(torch.nn.Module):
-    def __init__(self, encoder, input_dim, output_dim):
-        super(LogisticRegressionFineTune, self).__init__()
-        self.encoder = encoder
-        self.linear = torch.nn.Linear(input_dim, output_dim)
+model = encoder
+num_ftrs = model.fc.in_features
+model.fc = nn.Linear(num_ftrs, 800)
+model.train()
+model.to(device)
 
-    def forward(self, x):
-        outputs = self.linear(self.encoder(x))
-        return outputs
 
-model = LogisticRegressionFineTune(encoder, 1000, 800)
 criterion = nn.CrossEntropyLoss()
 criterion.to(device)
 
-optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 model.train()
 model.to(device)
