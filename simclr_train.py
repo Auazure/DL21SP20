@@ -16,44 +16,44 @@ import sys
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--checkpoint-dir', type=str)
-parser.add_argument('--epochs', type=int)
+parser.add_argument('--checkpoint-dir', type=str, default='')
+parser.add_argument('--epochs', type=int, default=1)
 parser.add_argument('--temperature', type=int, default=1)
 
 args = parser.parse_args()
 # sys.path.insert(1, args.checkpoint_dir)
+# path = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
 path = ''
-
 train_dataset = CustomDataset(root=path+'/dataset', split='unlabeled', transform=TransformsSimCLR(96))
 BATCH_SIZE = 256 
 
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=1)
 
-def train(train_loader, model, criterion, optimizer, args):
-    loss_epoch = 0
-    for step, ((x_i, x_j), _) in enumerate(train_loader):
-        optimizer.zero_grad()
-        x_i = x_i.cuda(non_blocking=True)
-        x_j = x_j.cuda(non_blocking=True)
+# def train(train_loader, model, criterion, optimizer, args):
+#     loss_epoch = 0
+#     for step, ((x_i, x_j), _) in enumerate(train_loader):
+#         optimizer.zero_grad()
+#         x_i = x_i.cuda(non_blocking=True)
+#         x_j = x_j.cuda(non_blocking=True)
 
-        # positive pair, with encoding
-        h_i, h_j, z_i, z_j = model(x_i, x_j)
+#         # positive pair, with encoding
+#         h_i, h_j, z_i, z_j = model(x_i, x_j)
 
-        loss = criterion(z_i, z_j)
-        loss.backward()
+#         loss = criterion(z_i, z_j)
+#         loss.backward()
 
-        optimizer.step()
-        if step%100==0:
-            print('Step: {}, Train Loss: {}'.format(step, loss.item()))
-#             os.makedirs(args.checkpoint_dir, exist_ok=True)
-            torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
-            torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
-        loss_epoch += loss.item()
-    return loss_epoch
+#         optimizer.step()
+#         if step%100==0:
+#             print('Step: {}, Train Loss: {}'.format(step, loss.item()))
+# #             os.makedirs(args.checkpoint_dir, exist_ok=True)
+#             torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.path'))
+#             torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.path'))
+#         loss_epoch += loss.item()
+#     return loss_epoch
 
-encoder = torchvision.models.resnet18(pretrained=False)
+encoder = torchvision.models.resnet18(pretrained=True)
 criterion = NT_Xent(BATCH_SIZE, args.temperature, 1)
-model = SimCLR(encoder, 1024, 512)
+model = SimCLR(encoder, 100, 512)
 # optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
 optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
 
@@ -100,8 +100,8 @@ for i in range(EPOCHS):
         if step%100==0:
             print('Step: {}, Train Loss: {}'.format(step, loss.item()))
 #             os.makedirs(args.checkpoint_dir, exist_ok=True)
-            torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.pth'))
-            torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.pth'))
+            torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder_18.pth'))
+            torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector_18.pth'))
         loss_epoch += loss.item()
     
     
@@ -118,8 +118,8 @@ for i in range(EPOCHS):
 
 print('Finish Training')
 # os.makedirs(args.checkpoint_dir, exist_ok=True)
-torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder.pth'))
-torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector.pth'))
+torch.save(model.encoder.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_encoder_18.pth'))
+torch.save(model.projector.state_dict(), os.path.join(args.checkpoint_dir, 'simclr_projector_18.pth'))
 print("Saved checkpoint to {os.path.join(args.checkpoint_dir, 'simclr.pth')}")
 
 
