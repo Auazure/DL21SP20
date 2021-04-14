@@ -29,6 +29,6 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python /SimSiam/simsiam_train.py --checkpoint-dir $HOME/checkpoints/ --model-name simsiam --epochs=1
+python SimSiam/simsiam_train.py --checkpoint-dir $HOME/checkpoints/ --model-name simsiam --epochs=1
 "
 #python eval.py --checkpoint-path $HOME/checkpoints/models/baseline.pth
