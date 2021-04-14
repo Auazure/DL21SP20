@@ -59,9 +59,9 @@ print(check)
 if check:
     print('Loading previous model')
     model.encoder.load_state_dict(torch.load(os.path.join(checkpoint_path,
-        args.model_name+"_encoder_{}.pth".format(args.net_size))))
+        args.model_name+"_encoder_{}.pth".format(args.net_size)),map_location=torch.device(device)))
     model.predictor.load_state_dict(torch.load(os.path.join(checkpoint_path,
-        args.model_name+"_predictor_{}.pth".format(args.net_size))))
+        args.model_name+"_predictor_{}.pth".format(args.net_size)),map_location=torch.device(device)))
 
 
 
