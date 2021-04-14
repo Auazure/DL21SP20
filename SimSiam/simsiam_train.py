@@ -73,7 +73,7 @@ optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
 
 model.train()
 EPOCHS=args.epochs
-
+train_losses = []
 for epoch in range(EPOCHS):
     print('Current Epoch {}'.format(epoch))
     mean_loss = 0
