@@ -36,8 +36,8 @@ args = parser.parse_args()
 checkpoint_path = args.checkpoint_dir + args.model_name
 
 # sys.path.insert(1, args.checkpoint_dir)
-# PATH = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
-PATH = ''
+PATH = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
+# PATH = ''
 train_dataset = CustomDataset(root=PATH+'/dataset', split='unlabeled', transform=get_aug(train=True, image_size=96))
 BATCH_SIZE = 256 
 print(len(train_dataset))
@@ -60,7 +60,7 @@ if check:
     print('Loading previous model')
     model.encoder.load_state_dict(torch.load(os.path.join(checkpoint_path,
         args.model_name+"_encoder_{}.pth".format(args.net_size))))
-    model.projector.load_state_dict(torch.load(os.path.join(checkpoint_path,
+    model.predictor.load_state_dict(torch.load(os.path.join(checkpoint_path,
         args.model_name+"_predictor_{}.pth".format(args.net_size))))
 
 
