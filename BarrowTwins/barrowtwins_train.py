@@ -325,3 +325,6 @@ class Transform:
         y1 = self.transform(x)
         y2 = self.transform_prime(x)
         return y1, y2
+
+if __name__ == '__main__':
+    main()
