@@ -78,7 +78,7 @@ for epoch in range(EPOCHS):
     print('Current Epoch {}'.format(epoch))
     mean_loss = 0
     mean_acc = 0
-    for idx, ((images1, images2), labels) in enumerate(train_dataloader, leave=False):
+    for idx, ((images1, images2), labels) in enumerate(train_dataloader):
         model.zero_grad()
         L = model.forward(images1.to(device, non_blocking=True), images2.to(device, non_blocking=True))
         loss = L.mean() # ddp
