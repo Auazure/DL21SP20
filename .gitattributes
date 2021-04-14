@@ -1,0 +1,4 @@
+checkpoitns/simsiam/simsiam_50_encoder.pth filter=lfs diff=lfs merge=lfs -text
+checkpoints/simsiam/simsiam_50_encoder.pth filter=lfs diff=lfs merge=lfs -text
+checkpoints/simsiam/simsiam_encoder_50.pth filter=lfs diff=lfs merge=lfs -text
+checkpoints filter=lfs diff=lfs merge=lfs -text
