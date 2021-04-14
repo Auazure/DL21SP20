@@ -19,7 +19,7 @@ from simsiam import SimSiam
 # from . import dataloader
 from dataloader import CustomDataset
 
-from tqdm.notebook import tqdm
+# from tqdm.notebook import tqdm
 
 
 
@@ -74,11 +74,11 @@ optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
 model.train()
 EPOCHS=args.epochs
 
-for epoch in tqdm(range(EPOCHS)):
+for epoch in range(EPOCHS):
     print('Current Epoch {}'.format(epoch))
     mean_loss = 0
     mean_acc = 0
-    for idx, ((images1, images2), labels) in enumerate(tqdm(train_dataloader, leave=False)):
+    for idx, ((images1, images2), labels) in enumerate(train_dataloader, leave=False):
         model.zero_grad()
         L = model.forward(images1.to(device, non_blocking=True), images2.to(device, non_blocking=True))
         loss = L.mean() # ddp
