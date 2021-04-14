@@ -29,5 +29,5 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python barrowtwins_train.py --epochs=1
+python /BarrowTwins/barrowtwins_train.py --epochs=1
 "
