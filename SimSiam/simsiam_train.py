@@ -26,14 +26,14 @@ from dataloader import CustomDataset
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--checkpoint-dir', type=str, default='checkpoints')
+parser.add_argument('--checkpoint-dir', type=str, default='checkpoints/')
 parser.add_argument('--model-name', type=str, default='simsiam')
 parser.add_argument('--epochs', type=int, default=1)
 parser.add_argument('--net_size', type=int, default=50)
 parser.add_argument('--temperature', type=int, default=1)
 
 args = parser.parse_args()
-checkpoint_path = args.checkpoint_dir + '/' + args.model_name
+checkpoint_path = args.checkpoint_dir + args.model_name
 
 # sys.path.insert(1, args.checkpoint_dir)
 # PATH = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
