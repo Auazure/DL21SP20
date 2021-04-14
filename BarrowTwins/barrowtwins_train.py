@@ -75,6 +75,7 @@ def main():
 
 def main_worker(gpu, args):
     # args.rank += gpu
+
     # torch.distributed.init_process_group(
     #     backend='nccl', init_method=args.dist_url,
     #     world_size=args.world_size, rank=args.rank)
