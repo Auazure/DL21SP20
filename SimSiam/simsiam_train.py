@@ -104,7 +104,7 @@ for epoch in range(EPOCHS):
 print('Finish Training')
 torch.save(model.encoder.state_dict(), os.path.join(checkpoint_path,
     args.model_name+ "_encoder_{}.pth".format(args.net_size)))
-torch.save(model.projector.state_dict(), os.path.join(checkpoint_path, 
+torch.save(model.predictor.state_dict(), os.path.join(checkpoint_path, 
     args.model_name+"_predictor_{}.pth".format(args.net_size)))
 print("Saved checkpoint to {os.path.join(args.checkpoint_dir, args.model_name, '.pth')}")
 
