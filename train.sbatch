@@ -3,9 +3,9 @@
 #SBATCH --gres=gpu:1
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl20
-#SBATCH --time=1:00:00
-#SBATCH --output=train_logs/simclr_%j.out
-#SBATCH --error=train_logs/simclr_%j.err
+#SBATCH --time=0:10:00
+#SBATCH --output=train_logs/simsiam_%j.out
+#SBATCH --error=train_logs/simsiam_%j.err
 #SBATCH --exclusive
 #SBATCH --requeue 
 
@@ -29,6 +29,6 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python simclr_train.py --checkpoint-dir $HOME/checkpoints/simclr_res --model-name simclr_pretrain --epochs=1
+python simsiam_train.py --checkpoint-dir $HOME/checkpoints/simsiam --model-name simsiam_50 --epochs=1
 "
 #python eval.py --checkpoint-path $HOME/checkpoints/models/baseline.pth
