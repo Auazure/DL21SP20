@@ -4,8 +4,8 @@
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl20
 #SBATCH --time=1:00:00
-#SBATCH --output=train_logs/barrowtwins_train_out_%j.out
-#SBATCH --error=train_logs/barrowtwins_train_err_%j.err
+#SBATCH --output=train_logs/barrowtwins_train_%j.out
+#SBATCH --error=train_logs/barrowtwins_train_%j.err
 #SBATCH --exclusive
 #SBATCH --requeue 
 
