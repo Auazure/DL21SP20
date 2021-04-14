@@ -23,7 +23,7 @@ import torchvision
 import torchvision.transforms as transforms
 
 parser = argparse.ArgumentParser(description='Barlow Twins Training')
-parser.add_argument('data',  default='/dataset', type=Path, metavar='DIR',
+parser.add_argument('--data',  default='/dataset', type=Path,
                     help='path to dataset')
 parser.add_argument('--workers', default=2, type=int, metavar='N',
                     help='number of data loader workers')
@@ -44,7 +44,7 @@ parser.add_argument('--scale-loss', default=1 / 32, type=float,
 parser.add_argument('--print-freq', default=100, type=int, metavar='N',
                     help='print frequency')
 parser.add_argument('--checkpoint-dir', default='$HOME/DL21SP20/checkpoints/barrowtwins', type=Path,
-                    metavar='DIR', help='path to checkpoint directory')
+                    help='path to checkpoint directory')
 
 
 def main():
@@ -70,12 +70,11 @@ def main():
     #     args.world_size = args.ngpus_per_node
     # torch.multiprocessing.spawn(main_worker, (args,), args.ngpus_per_node)
     args.rank = 0
-    main_worker(args, 0)
+    main_worker(0, args)
 
 
 def main_worker(gpu, args):
-    args.rank += gpu
-
+    # args.rank += gpu
     # torch.distributed.init_process_group(
     #     backend='nccl', init_method=args.dist_url,
     #     world_size=args.world_size, rank=args.rank)
