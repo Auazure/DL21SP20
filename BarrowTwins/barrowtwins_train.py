@@ -10,8 +10,8 @@ import json
 import math
 import os
 import random
-import signal
-import subprocess
+# import signal
+# import subprocess
 from dataloader import CustomDataset
 import sys
 import time
@@ -49,30 +49,33 @@ parser.add_argument('--checkpoint-dir', default='/checkpoints/barrowtwins', type
 
 def main():
     args = parser.parse_args()
-    args.ngpus_per_node = torch.cuda.device_count()
-    if 'SLURM_JOB_ID' in os.environ:
-        # single-node and multi-node distributed training on SLURM cluster
-        # requeue job on SLURM preemption
-        signal.signal(signal.SIGUSR1, handle_sigusr1)
-        signal.signal(signal.SIGTERM, handle_sigterm)
-        # find a common host name on all nodes
-        # assume scontrol returns hosts in the same order on all nodes
-        cmd = 'scontrol show hostnames ' + os.getenv('SLURM_JOB_NODELIST')
-        stdout = subprocess.check_output(cmd.split())
-        host_name = stdout.decode().splitlines()[0]
-        args.rank = int(os.getenv('SLURM_NODEID')) * args.ngpus_per_node
-        args.world_size = int(os.getenv('SLURM_NNODES')) * args.ngpus_per_node
-        args.dist_url = f'tcp://{host_name}:58472'
-    else:
-        # single-node distributed training
-        args.rank = 0
-        args.dist_url = 'tcp://localhost:58472'
-        args.world_size = args.ngpus_per_node
-    torch.multiprocessing.spawn(main_worker, (args,), args.ngpus_per_node)
+    # args.ngpus_per_node = torch.cuda.device_count()
+    # if 'SLURM_JOB_ID' in os.environ:
+    #     # single-node and multi-node distributed training on SLURM cluster
+    #     # requeue job on SLURM preemption
+    #     signal.signal(signal.SIGUSR1, handle_sigusr1)
+    #     signal.signal(signal.SIGTERM, handle_sigterm)
+    #     # find a common host name on all nodes
+    #     # assume scontrol returns hosts in the same order on all nodes
+    #     cmd = 'scontrol show hostnames ' + os.getenv('SLURM_JOB_NODELIST')
+    #     stdout = subprocess.check_output(cmd.split())
+    #     host_name = stdout.decode().splitlines()[0]
+    #     args.rank = int(os.getenv('SLURM_NODEID')) * args.ngpus_per_node
+    #     args.world_size = int(os.getenv('SLURM_NNODES')) * args.ngpus_per_node
+    #     args.dist_url = f'tcp://{host_name}:58472'
+    # else:
+    #     # single-node distributed training
+    #     args.rank = 0
+    #     args.dist_url = 'tcp://localhost:58472'
+    #     args.world_size = args.ngpus_per_node
+    # torch.multiprocessing.spawn(main_worker, (args,), args.ngpus_per_node)
+    args.rank = 0
+    main_worker(0, args)
 
 
 def main_worker(gpu, args):
     args.rank += gpu
+
     torch.distributed.init_process_group(
         backend='nccl', init_method=args.dist_url,
         world_size=args.world_size, rank=args.rank)
@@ -88,7 +91,7 @@ def main_worker(gpu, args):
 
     model = BarlowTwins(args).cuda(gpu)
     model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
-    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[gpu])
+    # model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[gpu])
     optimizer = LARS(model.parameters(), lr=0, weight_decay=args.weight_decay,
                      weight_decay_filter=exclude_bias_and_norm,
                      lars_adaptation_filter=exclude_bias_and_norm)
@@ -103,18 +106,22 @@ def main_worker(gpu, args):
     else:
         start_epoch = 0
 
+    # dataset = torchvision.datasets.ImageFolder(args.data / 'train', Transform())
+    # sampler = torch.utils.data.distributed.DistributedSampler(dataset)
+    # assert args.batch_size % args.world_size == 0
+    # per_device_batch_size = args.batch_size // args.world_size
+    # loader = torch.utils.data.DataLoader(
+    #     dataset, batch_size=per_device_batch_size, num_workers=args.workers,
+    #     pin_memory=True, sampler=sampler)
+
     dataset = CustomDataset(root=args.data, split='unlabeled', transform=Transform())
-    sampler = torch.utils.data.distributed.DistributedSampler(dataset)
-    assert args.batch_size % args.world_size == 0
-    per_device_batch_size = args.batch_size // args.world_size
     loader = torch.utils.data.DataLoader(
-        dataset, batch_size=per_device_batch_size, num_workers=args.workers,
-        pin_memory=True, sampler=sampler)
+        dataset, batch_size=args.batch_size, num_workers=args.workers)
 
     start_time = time.time()
     scaler = torch.cuda.amp.GradScaler()
     for epoch in range(start_epoch, args.epochs):
-        sampler.set_epoch(epoch)
+        # sampler.set_epoch(epoch)
         for step, ((y1, y2), _) in enumerate(loader, start=epoch * len(loader)):
             y1 = y1.cuda(gpu, non_blocking=True)
             y2 = y2.cuda(gpu, non_blocking=True)
@@ -140,7 +147,7 @@ def main_worker(gpu, args):
             torch.save(state, args.checkpoint_dir / 'checkpoint.pth')
     if args.rank == 0:
         # save final model
-        torch.save(model.module.backbone.state_dict(),
+        torch.save(model.backbone.state_dict(),
                    args.checkpoint_dir / 'resnet50.pth')
 
 
@@ -279,7 +286,6 @@ class Solarization(object):
             return ImageOps.solarize(img)
         else:
             return img
-
 
 
 # I changed 224 to 96
