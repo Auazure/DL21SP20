@@ -91,8 +91,8 @@ def main_worker(gpu, args):
     torch.cuda.set_device(gpu)
     # torch.backends.cudnn.benchmark = True
 
-    # model = BarlowTwins(args).cuda(gpu)
-    model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
+    model = BarlowTwins(args).cuda(gpu)
+    # model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
     # model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[gpu])
     optimizer = LARS(model.parameters(), lr=0, weight_decay=args.weight_decay,
                      weight_decay_filter=exclude_bias_and_norm,
