@@ -4,6 +4,8 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 
+# Di made some changes to be used in DL21SP course project
+
 from pathlib import Path
 import argparse
 import json
@@ -23,24 +25,37 @@ import torchvision
 import torchvision.transforms as transforms
 
 parser = argparse.ArgumentParser(description='Barlow Twins Training')
+
+# Di added it For Future usage
+parser.add_argument('--image-size',  default=96, type=int, metavar='N',
+                    help='image size')
+
+
+# For Training
 parser.add_argument('--data',  default='/dataset', type=Path,
                     help='path to dataset')
 parser.add_argument('--workers', default=2, type=int, metavar='N',
-                    help='number of data loader workers')
+                    help='number of data loader workers') # Real Default 8
 parser.add_argument('--epochs', default=20, type=int, metavar='N',
-                    help='number of total epochs to run')
+                    help='number of total epochs to run') # Real Default  300
 parser.add_argument('--batch-size', default=256, type=int, metavar='N',
-                    help='mini-batch size')
+                    help='mini-batch size') # Real Default 4096
+
+# For optimizer
 parser.add_argument('--learning-rate', default=0.2, type=float, metavar='LR',
                     help='base learning rate')
 parser.add_argument('--weight-decay', default=1e-6, type=float, metavar='W',
                     help='weight decay')
+
+# For loss Calculation
 parser.add_argument('--lambd', default=3.9e-3, type=float, metavar='L',
                     help='weight on off-diagonal terms')
 parser.add_argument('--projector', default='8192-8192-8192', type=str,
                     metavar='MLP', help='projector MLP')
 parser.add_argument('--scale-loss', default=1 / 32, type=float,
-                    metavar='S', help='scale the loss')
+                    metavar='S', help='scale the loss') # Not really needed
+
+# For saving model and outputs
 parser.add_argument('--print-freq', default=100, type=int, metavar='N',
                     help='print frequency')
 parser.add_argument('--checkpoint-dir', default='/checkpoints/barrowtwins', type=Path,
@@ -69,9 +84,7 @@ def main():
     #     args.dist_url = 'tcp://localhost:58472'
     #     args.world_size = args.ngpus_per_node
     # torch.multiprocessing.spawn(main_worker, (args,), args.ngpus_per_node)
-    args.rank = 0
-    # args.dist_url = 'tcp://localhost:58472'
-    # args.world_size = 1
+
     main_worker(0, args)
 
 
@@ -116,7 +129,7 @@ def main_worker(gpu, args):
     #     dataset, batch_size=per_device_batch_size, num_workers=args.workers,
     #     pin_memory=True, sampler=sampler)
 
-    dataset = CustomDataset(root=args.data, split='unlabeled', transform=Transform())
+    dataset = CustomDataset(root=args.data, split='unlabeled', transform=Transform(args.image_size))
     loader = torch.utils.data.DataLoader(
         dataset, batch_size=args.batch_size, num_workers=args.workers)
 
@@ -136,12 +149,12 @@ def main_worker(gpu, args):
             scaler.update()
             if step % args.print_freq == 0:
                 # torch.distributed.reduce(loss.div_(args.world_size), 0)
-                if args.rank == 0:
-                    stats = dict(epoch=epoch, step=step, learning_rate=lr,
-                                 loss=loss.item(),
-                                 time=int(time.time() - start_time))
-                    print(json.dumps(stats))
-                    print(json.dumps(stats), file=stats_file)
+                # if args.rank == 0:
+                stats = dict(epoch=epoch, step=step, learning_rate=lr,
+                             loss=loss.item(),
+                             time=int(time.time() - start_time))
+                print(json.dumps(stats))
+                print(json.dumps(stats), file=stats_file)
         # if args.rank == 0:
         # save checkpoint
         state = dict(epoch=epoch + 1, model=model.state_dict(),
@@ -154,7 +167,8 @@ def main_worker(gpu, args):
 
 
 def adjust_learning_rate(args, optimizer, loader, step):
-    max_steps = args.epochs * len(loader)
+    # Di defined 100
+    max_steps = max(args.epochs * len(loader), 100 * len(loader))
     warmup_steps = 10 * len(loader)
     base_lr = args.learning_rate * args.batch_size / 256
     if step < warmup_steps:
@@ -170,14 +184,14 @@ def adjust_learning_rate(args, optimizer, loader, step):
     return lr
 
 
-def handle_sigusr1(signum, frame):
-    os.system(f'scontrol requeue {os.getenv("SLURM_JOB_ID")}')
-    exit()
-
-
-def handle_sigterm(signum, frame):
-    pass
-
+# def handle_sigusr1(signum, frame):
+#     os.system(f'scontrol requeue {os.getenv("SLURM_JOB_ID")}')
+#     exit()
+#
+#
+# def handle_sigterm(signum, frame):
+#     pass
+#
 
 def off_diagonal(x):
     # return a flattened view of the off-diagonal elements of a square matrix
@@ -292,9 +306,9 @@ class Solarization(object):
 
 # I changed 224 to 96
 class Transform:
-    def __init__(self):
+    def __init__(self, image_size):
         self.transform = transforms.Compose([
-            transforms.RandomResizedCrop(96, interpolation=Image.BICUBIC),
+            transforms.RandomResizedCrop(image_size, interpolation=Image.BICUBIC),
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.RandomApply(
                 [transforms.ColorJitter(brightness=0.4, contrast=0.4,
@@ -309,7 +323,7 @@ class Transform:
                                  std=[0.229, 0.224, 0.225])
         ])
         self.transform_prime = transforms.Compose([
-            transforms.RandomResizedCrop(96, interpolation=Image.BICUBIC),
+            transforms.RandomResizedCrop(image_size, interpolation=Image.BICUBIC),
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.RandomApply(
                 [transforms.ColorJitter(brightness=0.4, contrast=0.4,
