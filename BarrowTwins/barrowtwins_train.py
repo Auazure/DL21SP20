@@ -70,6 +70,8 @@ def main():
     #     args.world_size = args.ngpus_per_node
     # torch.multiprocessing.spawn(main_worker, (args,), args.ngpus_per_node)
     args.rank = 0
+    args.dist_url = 'tcp://localhost:58472'
+    args.world_size = 1
     main_worker(0, args)
 
 
