@@ -43,7 +43,7 @@ parser.add_argument('--scale-loss', default=1 / 32, type=float,
                     metavar='S', help='scale the loss')
 parser.add_argument('--print-freq', default=100, type=int, metavar='N',
                     help='print frequency')
-parser.add_argument('--checkpoint-dir', default='$HOME/DL21SP20/checkpoints/barrowtwins', type=Path,
+parser.add_argument('--checkpoint-dir', default='/checkpoints/barrowtwins', type=Path,
                     help='path to checkpoint directory')
 
 
@@ -132,7 +132,7 @@ def main_worker(gpu, args):
             scaler.step(optimizer)
             scaler.update()
             if step % args.print_freq == 0:
-                torch.distributed.reduce(loss.div_(args.world_size), 0)
+                # torch.distributed.reduce(loss.div_(args.world_size), 0)
                 if args.rank == 0:
                     stats = dict(epoch=epoch, step=step, learning_rate=lr,
                                  loss=loss.item(),
@@ -212,7 +212,7 @@ class BarlowTwins(nn.Module):
 
         # sum the cross-correlation matrix between all gpus
         c.div_(self.args.batch_size)
-        torch.distributed.all_reduce(c)
+        # torch.distributed.all_reduce(c)
 
         # use --scale-loss to multiply the loss by a constant factor
         # see the Issues section of the readme
