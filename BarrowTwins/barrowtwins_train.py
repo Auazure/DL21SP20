@@ -70,28 +70,28 @@ def main():
     #     args.world_size = args.ngpus_per_node
     # torch.multiprocessing.spawn(main_worker, (args,), args.ngpus_per_node)
     args.rank = 0
-    args.dist_url = 'tcp://localhost:58472'
-    args.world_size = 1
+    # args.dist_url = 'tcp://localhost:58472'
+    # args.world_size = 1
     main_worker(0, args)
 
 
 def main_worker(gpu, args):
-    args.rank += gpu
+    # args.rank += gpu
+    #
+    # torch.distributed.init_process_group(
+    #     backend='nccl', init_method=args.dist_url,
+    #     world_size=args.world_size, rank=args.rank)
 
-    torch.distributed.init_process_group(
-        backend='nccl', init_method=args.dist_url,
-        world_size=args.world_size, rank=args.rank)
-
-    if args.rank == 0:
-        args.checkpoint_dir.mkdir(parents=True, exist_ok=True)
-        stats_file = open(args.checkpoint_dir / 'stats.txt', 'a', buffering=1)
-        print(' '.join(sys.argv))
-        print(' '.join(sys.argv), file=stats_file)
+    # if args.rank == 0:
+    args.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    stats_file = open(args.checkpoint_dir / 'stats.txt', 'a', buffering=1)
+    print(' '.join(sys.argv))
+    print(' '.join(sys.argv), file=stats_file)
 
     torch.cuda.set_device(gpu)
-    torch.backends.cudnn.benchmark = True
+    # torch.backends.cudnn.benchmark = True
 
-    model = BarlowTwins(args).cuda(gpu)
+    # model = BarlowTwins(args).cuda(gpu)
     model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
     # model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[gpu])
     optimizer = LARS(model.parameters(), lr=0, weight_decay=args.weight_decay,
@@ -135,22 +135,22 @@ def main_worker(gpu, args):
             scaler.step(optimizer)
             scaler.update()
             if step % args.print_freq == 0:
-                torch.distributed.reduce(loss.div_(args.world_size), 0)
+                # torch.distributed.reduce(loss.div_(args.world_size), 0)
                 if args.rank == 0:
                     stats = dict(epoch=epoch, step=step, learning_rate=lr,
                                  loss=loss.item(),
                                  time=int(time.time() - start_time))
                     print(json.dumps(stats))
                     print(json.dumps(stats), file=stats_file)
-        if args.rank == 0:
-            # save checkpoint
-            state = dict(epoch=epoch + 1, model=model.state_dict(),
-                         optimizer=optimizer.state_dict())
-            torch.save(state, args.checkpoint_dir / 'checkpoint.pth')
-    if args.rank == 0:
-        # save final model
-        torch.save(model.backbone.state_dict(),
-                   args.checkpoint_dir / 'resnet50.pth')
+        # if args.rank == 0:
+        # save checkpoint
+        state = dict(epoch=epoch + 1, model=model.state_dict(),
+                     optimizer=optimizer.state_dict())
+        torch.save(state, args.checkpoint_dir / 'checkpoint.pth')
+    # if args.rank == 0:
+    # save final model
+    torch.save(model.backbone.state_dict(),
+               args.checkpoint_dir / 'resnet50.pth')
 
 
 def adjust_learning_rate(args, optimizer, loader, step):
@@ -215,7 +215,7 @@ class BarlowTwins(nn.Module):
 
         # sum the cross-correlation matrix between all gpus
         c.div_(self.args.batch_size)
-        torch.distributed.all_reduce(c)
+        # torch.distributed.all_reduce(c)
 
         # use --scale-loss to multiply the loss by a constant factor
         # see the Issues section of the readme
