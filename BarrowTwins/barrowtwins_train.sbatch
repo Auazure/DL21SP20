@@ -29,5 +29,9 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python $HOME/DL21SP20/BarrowTwins/barrowtwins_train.py --resnet-layers=18 --epochs=1 --checkpoint-dir $HOME/DL21SP20/checkpoints/barrowtwins
+python $HOME/DL21SP20/BarrowTwins/barrowtwins_train.py --resnet-layers=18 \
+--lambd=1.56e-2 \
+--projector 2048-2048-2048 \
+--epochs=1 \
+--checkpoint-dir $HOME/DL21SP20/checkpoints/barrowtwins
 "
