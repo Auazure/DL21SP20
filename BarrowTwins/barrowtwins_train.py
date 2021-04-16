@@ -115,7 +115,7 @@ def main_worker(gpu, args):
 
     # automatically resume from checkpoint if it exists
     if (args.checkpoint_dir / 'checkpoint_{}.pth'.format(args.resnet_layers)).is_file():
-        ckpt = torch.load(args.checkpoint_dir / 'checkpoint_{].pth'.format(args.resnet_layers),
+        ckpt = torch.load(args.checkpoint_dir / 'checkpoint_{}.pth'.format(args.resnet_layers),
                           map_location='cpu')
         start_epoch = ckpt['epoch']
         model.load_state_dict(ckpt['model'])
