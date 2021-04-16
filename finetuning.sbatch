@@ -3,7 +3,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl20
-#SBATCH --time=00:20:00
+#SBATCH --time=00:10:00
 #SBATCH --output=train_logs/finetuning_%j.out
 #SBATCH --error=train_logs/finetuning_%j.err
 #SBATCH --exclusive
@@ -29,9 +29,10 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python finetuning.py --pretrained-dir $HOME/DL21SP20/checkpoints/barrowtwins/resnet50_epochs20.pth \
+python finetuning.py --pretrained-dir-file $HOME/DL21SP20/checkpoints/barrowtwins/resnet50_epochs20.pth \
 --model-name resnet50 \
 --pretrained-algo barrowtwins \
+--checkpoint-dir $HOME/DL21SP20/checkpoints/finetuning
 --checkpoint-file barrowtwins_resnet50_epochs20.pth \
 --epochs=5
 "

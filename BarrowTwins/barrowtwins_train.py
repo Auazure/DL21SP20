@@ -29,6 +29,8 @@ parser = argparse.ArgumentParser(description='Barlow Twins Training')
 # Di added it For Future usage
 parser.add_argument('--image-size',  default=96, type=int, metavar='N',
                     help='image size')
+parser.add_argument('--resnet-layers', default=18, type=int,
+                    help='needs to be 50 or 18')
 
 
 # For Training
@@ -48,17 +50,17 @@ parser.add_argument('--weight-decay', default=1e-6, type=float, metavar='W',
                     help='weight decay')
 
 # For loss Calculation
-parser.add_argument('--lambd', default=3.9e-3, type=float, metavar='L',
-                    help='weight on off-diagonal terms')
-parser.add_argument('--projector', default='8192-8192-8192', type=str,
-                    metavar='MLP', help='projector MLP')
+parser.add_argument('--lambd', default=1.56e-2, type=float, metavar='L',
+                    help='weight on off-diagonal terms') # Real Default 3.9e-3 (1/8191*32)
+parser.add_argument('--projector', default='2048-2048-2048', type=str,
+                    metavar='MLP', help='projector MLP') # Real Default '8192-8192-8192'
 parser.add_argument('--scale-loss', default=1 / 32, type=float,
                     metavar='S', help='scale the loss') # Not really needed
 
 # For saving model and outputs
 parser.add_argument('--print-freq', default=100, type=int, metavar='N',
                     help='print frequency')
-parser.add_argument('--checkpoint-dir', default='/checkpoints/barrowtwins', type=Path,
+parser.add_argument('--checkpoint-dir', default='./checkpoints/barrowtwins', type=Path,
                     help='path to checkpoint directory')
 
 
@@ -97,7 +99,7 @@ def main_worker(gpu, args):
 
     # if args.rank == 0:
     args.checkpoint_dir.mkdir(parents=True, exist_ok=True)
-    stats_file = open(args.checkpoint_dir / 'stats.txt', 'a', buffering=1)
+    stats_file = open(args.checkpoint_dir / 'stats_{}.txt'.format(args.resnet_layers), 'a', buffering=1)
     print(' '.join(sys.argv))
     print(' '.join(sys.argv), file=stats_file)
 
@@ -112,8 +114,8 @@ def main_worker(gpu, args):
                      lars_adaptation_filter=exclude_bias_and_norm)
 
     # automatically resume from checkpoint if it exists
-    if (args.checkpoint_dir / 'checkpoint.pth').is_file():
-        ckpt = torch.load(args.checkpoint_dir / 'checkpoint.pth',
+    if (args.checkpoint_dir / 'checkpoint{}.pth'.format(args.resnet_layers)).is_file():
+        ckpt = torch.load(args.checkpoint_dir / 'checkpoint{].pth'.format(args.resnet_layers),
                           map_location='cpu')
         start_epoch = ckpt['epoch']
         model.load_state_dict(ckpt['model'])
@@ -159,11 +161,11 @@ def main_worker(gpu, args):
         # save checkpoint
         state = dict(epoch=epoch + 1, model=model.state_dict(),
                      optimizer=optimizer.state_dict())
-        torch.save(state, args.checkpoint_dir / 'checkpoint.pth')
+        torch.save(state, args.checkpoint_dir / 'checkpoint{}.pth').format(args.resnet_layers)
     # if args.rank == 0:
     # save final model
     torch.save(model.backbone.state_dict(),
-               args.checkpoint_dir / 'resnet50.pth')
+               args.checkpoint_dir / 'resnet{}.pth').format(args.resnet_layers)
 
 
 def adjust_learning_rate(args, optimizer, loader, step):
@@ -204,11 +206,16 @@ class BarlowTwins(nn.Module):
     def __init__(self, args):
         super().__init__()
         self.args = args
-        self.backbone = torchvision.models.resnet50(zero_init_residual=True)
+        # Di added this
+        if args.resnet_layers == 50:
+            self.backbone = torchvision.models.resnet50(zero_init_residual=True)
+            sizes = [2048] + list(map(int, args.projector.split('-')))
+        else:
+            self.backbone = torchvision.models.resnet18(zero_init_residual=True)
+            sizes = [512] + list(map(int, args.projector.split('-')))
         self.backbone.fc = nn.Identity()
 
         # projector
-        sizes = [2048] + list(map(int, args.projector.split('-')))
         layers = []
         for i in range(len(sizes) - 2):
             layers.append(nn.Linear(sizes[i], sizes[i + 1], bias=False))

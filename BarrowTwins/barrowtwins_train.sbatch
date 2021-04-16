@@ -3,7 +3,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl20
-#SBATCH --time=1:00:00
+#SBATCH --time=00:30:00
 #SBATCH --output=train_logs/barrowtwins_train_%j.out
 #SBATCH --error=train_logs/barrowtwins_train_%j.err
 #SBATCH --exclusive
@@ -29,5 +29,5 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python $HOME/DL21SP20/BarrowTwins/barrowtwins_train.py --epochs=1 --checkpoint-dir $HOME/DL21SP20/checkpoints/barrowtwins
+python $HOME/DL21SP20/BarrowTwins/barrowtwins_train.py --resnet-layers=18 --epochs=1 --checkpoint-dir $HOME/DL21SP20/checkpoints/barrowtwins
 "

@@ -12,7 +12,7 @@ import os
 parser = argparse.ArgumentParser()
 
 # Input
-parser.add_argument('--pretrained-dir-file', default='/checkpoints/barrowtwins/resnet50.pth', type=Path,
+parser.add_argument('--pretrained-dir-file', default='./checkpoints/barrowtwins/resnet50.pth', type=Path,
                     help='path and filename to pretrained model')
 
 parser.add_argument('--model-name', default='resnet50', type=str,
@@ -44,7 +44,7 @@ parser.add_argument('--learning-rate', default=0.01, type=float, metavar='LR',
                     help='base learning rate')
 
 # For saving model and outputs
-parser.add_argument('--checkpoint-dir', default='/checkpoints/finetuning', type=Path,
+parser.add_argument('--checkpoint-dir', default='./checkpoints/finetuning', type=Path,
                     help='path to checkpoint directory')
 parser.add_argument('--checkpoint-file', default='barrowtwins_resnet50.pth', type=str,
                     help='file name of checkpoint')
@@ -93,7 +93,7 @@ def main_worker(gpu, args):
     criterion.to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-    # args.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    args.checkpoint_dir.mkdir(parents=True, exist_ok=True)
     stats_file = open(args.checkpoint_dir / 'finetuning_stats.txt', 'a', buffering=1)
     print(' '.join(sys.argv))
     print(' '.join(sys.argv), file=stats_file)
