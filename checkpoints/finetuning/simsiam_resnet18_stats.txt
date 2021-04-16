@@ -1,0 +1,37 @@
+finetuning.py --pretrained-dir-file /home/dh3171/DL21SP20/checkpoints/simsiam/simsiam_encoder_18_backbone.pth --model-name resnet18 --pretrained-algo simsiam --checkpoint-dir /home/dh3171/DL21SP20/checkpoints/finetuning --checkpoint-file simsiam_resnet18.pth --epochs=5
+Epoch: 0, Train Loss: 0.03, Val Loss: 0.02, Train Acc: 0.01, Val Acc: 0.01, Time: 48.37360668182373
+Epoch: 1, Train Loss: 0.02, Val Loss: 0.02, Train Acc: 0.01, Val Acc: 0.02, Time: 77.54191207885742
+Epoch: 2, Train Loss: 0.02, Val Loss: 0.02, Train Acc: 0.02, Val Acc: 0.03, Time: 106.77815103530884
+Epoch: 3, Train Loss: 0.02, Val Loss: 0.02, Train Acc: 0.03, Val Acc: 0.04, Time: 136.32207489013672
+Epoch: 4, Train Loss: 0.02, Val Loss: 0.02, Train Acc: 0.04, Val Acc: 0.04, Time: 165.7022831439972
+finetuning.py --pretrained-dir-file /home/dh3171/DL21SP20/checkpoints/simsiam/simsiam_encoder_18_backbone.pth --model-name resnet18 --pretrained-algo simsiam --checkpoint-dir /home/dh3171/DL21SP20/checkpoints/finetuning --checkpoint-file simsiam_resnet18.pth --epochs=30
+Epoch: 0, Train Loss: 0.0257, Val Loss: 0.0243, Train Acc: 0.0052, Val Acc: 0.0115, Time: 46.0206937789917
+Epoch: 1, Train Loss: 0.0240, Val Loss: 0.0235, Train Acc: 0.0112, Val Acc: 0.0148, Time: 75.64792990684509
+Epoch: 2, Train Loss: 0.0232, Val Loss: 0.0228, Train Acc: 0.0180, Val Acc: 0.0221, Time: 105.76328659057617
+Epoch: 3, Train Loss: 0.0224, Val Loss: 0.0222, Train Acc: 0.0282, Val Acc: 0.0315, Time: 135.51305532455444
+Epoch: 4, Train Loss: 0.0217, Val Loss: 0.0217, Train Acc: 0.0371, Val Acc: 0.0398, Time: 164.65471267700195
+Epoch: 5, Train Loss: 0.0211, Val Loss: 0.0213, Train Acc: 0.0466, Val Acc: 0.0454, Time: 193.971617937088
+Epoch: 6, Train Loss: 0.0206, Val Loss: 0.0211, Train Acc: 0.0546, Val Acc: 0.0542, Time: 223.12378859519958
+Epoch: 7, Train Loss: 0.0201, Val Loss: 0.0207, Train Acc: 0.0644, Val Acc: 0.0584, Time: 252.50509405136108
+Epoch: 8, Train Loss: 0.0197, Val Loss: 0.0205, Train Acc: 0.0730, Val Acc: 0.0661, Time: 281.768168926239
+Epoch: 9, Train Loss: 0.0193, Val Loss: 0.0205, Train Acc: 0.0815, Val Acc: 0.0689, Time: 310.65443325042725
+Epoch: 10, Train Loss: 0.0189, Val Loss: 0.0202, Train Acc: 0.0918, Val Acc: 0.0757, Time: 339.6551892757416
+Epoch: 11, Train Loss: 0.0185, Val Loss: 0.0200, Train Acc: 0.1016, Val Acc: 0.0798, Time: 368.7532682418823
+Epoch: 12, Train Loss: 0.0181, Val Loss: 0.0199, Train Acc: 0.1117, Val Acc: 0.0839, Time: 397.9526059627533
+Epoch: 13, Train Loss: 0.0177, Val Loss: 0.0199, Train Acc: 0.1208, Val Acc: 0.0865, Time: 427.08702754974365
+Epoch: 14, Train Loss: 0.0172, Val Loss: 0.0197, Train Acc: 0.1314, Val Acc: 0.0914, Time: 456.15003085136414
+Epoch: 15, Train Loss: 0.0169, Val Loss: 0.0197, Train Acc: 0.1416, Val Acc: 0.0952, Time: 485.49533677101135
+Epoch: 16, Train Loss: 0.0164, Val Loss: 0.0195, Train Acc: 0.1582, Val Acc: 0.1007, Time: 515.3121671676636
+Epoch: 17, Train Loss: 0.0161, Val Loss: 0.0195, Train Acc: 0.1676, Val Acc: 0.1027, Time: 544.9850358963013
+Epoch: 18, Train Loss: 0.0157, Val Loss: 0.0196, Train Acc: 0.1739, Val Acc: 0.1035, Time: 574.4517827033997
+Epoch: 19, Train Loss: 0.0153, Val Loss: 0.0196, Train Acc: 0.1926, Val Acc: 0.1082, Time: 604.0068356990814
+Epoch: 20, Train Loss: 0.0149, Val Loss: 0.0195, Train Acc: 0.2056, Val Acc: 0.1115, Time: 633.0555171966553
+Epoch: 21, Train Loss: 0.0145, Val Loss: 0.0197, Train Acc: 0.2228, Val Acc: 0.1105, Time: 662.0728178024292
+Epoch: 22, Train Loss: 0.0141, Val Loss: 0.0196, Train Acc: 0.2349, Val Acc: 0.1172, Time: 691.587488412857
+Epoch: 23, Train Loss: 0.0137, Val Loss: 0.0198, Train Acc: 0.2467, Val Acc: 0.1184, Time: 720.793342590332
+Epoch: 24, Train Loss: 0.0133, Val Loss: 0.0198, Train Acc: 0.2669, Val Acc: 0.1157, Time: 749.424031496048
+Epoch: 25, Train Loss: 0.0129, Val Loss: 0.0200, Train Acc: 0.2812, Val Acc: 0.1155, Time: 778.0788290500641
+Epoch: 26, Train Loss: 0.0126, Val Loss: 0.0202, Train Acc: 0.2952, Val Acc: 0.1183, Time: 806.7089593410492
+Epoch: 27, Train Loss: 0.0121, Val Loss: 0.0202, Train Acc: 0.3158, Val Acc: 0.1207, Time: 835.8149237632751
+Epoch: 28, Train Loss: 0.0117, Val Loss: 0.0204, Train Acc: 0.3335, Val Acc: 0.1177, Time: 864.497316122055
+Epoch: 29, Train Loss: 0.0114, Val Loss: 0.0206, Train Acc: 0.3534, Val Acc: 0.1211, Time: 893.8140320777893
