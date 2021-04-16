@@ -32,7 +32,7 @@ conda activate dev
 python finetuning.py --pretrained-dir-file $HOME/DL21SP20/checkpoints/barrowtwins/resnet50_epochs20.pth \
 --model-name resnet50 \
 --pretrained-algo barrowtwins \
---checkpoint-dir $HOME/DL21SP20/checkpoints/finetuning
+--checkpoint-dir $HOME/DL21SP20/checkpoints/finetuning \
 --checkpoint-file barrowtwins_resnet50_epochs20.pth \
 --epochs=5
 "

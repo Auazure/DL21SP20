@@ -94,7 +94,7 @@ def main_worker(gpu, args):
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
     args.checkpoint_dir.mkdir(parents=True, exist_ok=True)
-    stats_file = open(args.checkpoint_dir / 'finetuning_stats.txt', 'a', buffering=1)
+    stats_file = open(args.checkpoint_dir / '{}_stats.txt'.format(args.checkpoint_file), 'a', buffering=1)
     print(' '.join(sys.argv))
     print(' '.join(sys.argv), file=stats_file)
     best_validation_accuracy = 0
@@ -171,7 +171,7 @@ def pretrained_model(pretrained_algo, model_name, pretrained_dir_file, finetunin
         else:
             pre_model = torchvision.models.resnet18()
             n_in_features = pre_model.fc.in_features
-            if pretrained_algo == 'barrowtwins':
+            if pretrained_algo in ['barrowtwins', 'simsiam']:
                 pre_model.fc = nn.Identity()
             pre_model.load_state_dict(torch.load(pretrained_dir_file))
 
@@ -187,7 +187,7 @@ def pretrained_model(pretrained_algo, model_name, pretrained_dir_file, finetunin
         else:
             pre_model = torchvision.models.resnet50()
             n_in_features = pre_model.fc.in_features
-            if pretrained_algo == 'barrowtwins':
+            if pretrained_algo in ['barrowtwins', 'simsiam']:
                 pre_model.fc = nn.Identity()
             pre_model.load_state_dict(torch.load(pretrained_dir_file))
 

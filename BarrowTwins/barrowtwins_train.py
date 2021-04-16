@@ -114,8 +114,8 @@ def main_worker(gpu, args):
                      lars_adaptation_filter=exclude_bias_and_norm)
 
     # automatically resume from checkpoint if it exists
-    if (args.checkpoint_dir / 'checkpoint{}.pth'.format(args.resnet_layers)).is_file():
-        ckpt = torch.load(args.checkpoint_dir / 'checkpoint{].pth'.format(args.resnet_layers),
+    if (args.checkpoint_dir / 'checkpoint_{}.pth'.format(args.resnet_layers)).is_file():
+        ckpt = torch.load(args.checkpoint_dir / 'checkpoint_{].pth'.format(args.resnet_layers),
                           map_location='cpu')
         start_epoch = ckpt['epoch']
         model.load_state_dict(ckpt['model'])
@@ -161,11 +161,11 @@ def main_worker(gpu, args):
         # save checkpoint
         state = dict(epoch=epoch + 1, model=model.state_dict(),
                      optimizer=optimizer.state_dict())
-        torch.save(state, args.checkpoint_dir / 'checkpoint{}.pth').format(args.resnet_layers)
+        torch.save(state, args.checkpoint_dir / 'checkpoint_{}.pth'.format(args.resnet_layers))
     # if args.rank == 0:
     # save final model
     torch.save(model.backbone.state_dict(),
-               args.checkpoint_dir / 'resnet{}.pth').format(args.resnet_layers)
+               args.checkpoint_dir / 'resnet_{}.pth'.format(args.resnet_layers))
 
 
 def adjust_learning_rate(args, optimizer, loader, step):
