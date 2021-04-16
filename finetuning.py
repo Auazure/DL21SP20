@@ -93,7 +93,7 @@ def main_worker(gpu, args):
     criterion.to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-    args.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    # args.checkpoint_dir.mkdir(parents=True, exist_ok=True)
     stats_file = open(args.checkpoint_dir / 'finetuning_stats.txt', 'a', buffering=1)
     print(' '.join(sys.argv))
     print(' '.join(sys.argv), file=stats_file)
