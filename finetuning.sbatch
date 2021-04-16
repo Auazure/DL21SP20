@@ -29,9 +29,9 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python finetuning.py --pretrained-dir $HOME/DL21SP20/checkpoints/barrowtwins/resnet50.pth \
+python finetuning.py --pretrained-dir $HOME/DL21SP20/checkpoints/barrowtwins/resnet50_epochs20.pth \
 --model-name resnet50 \
 --pretrained-algo barrowtwins \
---checkpoint-file barrowtwins_resnet50.pth \
---epochs = 5
+--checkpoint-file barrowtwins_resnet50_epochs20.pth \
+--epochs=5
 "
