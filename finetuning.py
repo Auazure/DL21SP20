@@ -131,13 +131,13 @@ def main_worker(gpu, args):
             torch.save(model.state_dict(), args.checkpoint_dir / args.checkpoint_file)
 
         time_elapsed = time.time() - since
-        print('Epoch: {}, Train Loss: {:.2f}, Val Loss: {:.2f}, Train Acc: {:.2f}, Val Acc: {:.2f}, Time: {}'.format(i,
+        print('Epoch: {}, Train Loss: {:.4f}, Val Loss: {:.4f}, Train Acc: {:.4f}, Val Acc: {:.4f}, Time: {}'.format(i,
                                                                                                                      mean_train_loss,
                                                                                                                      mean_validation_loss,
                                                                                                                      train_accuracy,
                                                                                                                      validation_accuracy,
                                                                                                                      time_elapsed))
-        print('Epoch: {}, Train Loss: {:.2f}, Val Loss: {:.2f}, Train Acc: {:.2f}, Val Acc: {:.2f}, Time: {}'.format(i,
+        print('Epoch: {}, Train Loss: {:.4f}, Val Loss: {:.4f}, Train Acc: {:.4f}, Val Acc: {:.4f}, Time: {}'.format(i,
                                                                                                                      mean_train_loss,
                                                                                                                      mean_validation_loss,
                                                                                                                      train_accuracy,
