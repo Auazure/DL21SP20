@@ -94,7 +94,7 @@ def main_worker(gpu, args):
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
     args.checkpoint_dir.mkdir(parents=True, exist_ok=True)
-    stats_file = open(args.checkpoint_dir / '{}_stats.txt'.format(args.checkpoint_file), 'a', buffering=1)
+    stats_file = open(args.checkpoint_dir / '{}_stats.txt'.format(args.checkpoint_file[:-4]), 'a', buffering=1)
     print(' '.join(sys.argv))
     print(' '.join(sys.argv), file=stats_file)
     best_validation_accuracy = 0
