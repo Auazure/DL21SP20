@@ -199,6 +199,8 @@ def pretrained_model(pretrained_algo, model_name, pretrained_dir_file, finetunin
         print("Invalid model name, exiting...")
         exit()
 
+    return pre_model
+
 print('Finish Training')
 
 if __name__ == '__main__':
