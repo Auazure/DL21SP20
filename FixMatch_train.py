@@ -51,7 +51,7 @@ validation_transforms = transforms.Compose([
                                 ])
 BATCH_SIZE = 512 # TODO
 PATH = ''
-PATH = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
+# PATH = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
 
 unlabeled_dataset = CustomDataset(PATH+'/dataset', 'unlabeled', transform=transform_unlabled)
 unlabeled_trainloader = torch.utils.data.DataLoader(unlabeled_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=1)
