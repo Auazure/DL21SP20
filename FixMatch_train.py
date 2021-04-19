@@ -54,7 +54,7 @@ PATH = ''
 # PATH = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
 
 unlabeled_dataset = CustomDataset(PATH+'/dataset', 'unlabeled', transform=transform_unlabled)
-unlabeled_trainloader = torch.utils.data.DataLoader(unlabeled_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=1)
+unlabeled_trainloader = torch.utils.data.DataLoader(unlabeled_dataset, batch_size=BATCH_SIZE*8, shuffle=True, num_workers=1)
 
 labeled_dataset = CustomDataset(PATH+'/dataset', 'train', transform=transform_labeled)
 labeled_trainloader = torch.utils.data.DataLoader(labeled_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=1)
@@ -72,7 +72,7 @@ model = resnet18() if args.net_size=='18' else resnet50()
 model.fc = nn.Linear(512, 800)
 model.to(device)
 
-optimizer = torch.optim.SGD(model.parameters(), lr=0.01,momentum=0.9, nesterov=True)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.03,momentum=0.9, nesterov=True)
 
 model_param_path = os.path.join(checkpoint_path,
         args.model_name+"_{}_checkpoint.pt".format(args.net_size))
