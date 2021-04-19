@@ -4,8 +4,8 @@
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl20
 #SBATCH --time=0:10:00
-#SBATCH --output=train_logs/simsiam_%j.out
-#SBATCH --error=train_logs/simsiam_%j.err
+#SBATCH --output=train_logs/FixMatch_%j.out
+#SBATCH --error=train_logs/FixMatch_%j.err
 #SBATCH --exclusive
 #SBATCH --requeue 
 
