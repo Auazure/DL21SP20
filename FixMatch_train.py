@@ -95,7 +95,7 @@ eval_step = 1000
 EPOCHS = args.epochs
 temperature = args.temperature
 lambda_un = 1
-period = 100
+period = 300
 model.train()
 
 
