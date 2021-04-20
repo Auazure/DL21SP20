@@ -4,8 +4,8 @@
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl20
 #SBATCH --time=0:10:00
-#SBATCH --output=train_logs/simsiam_%j.out
-#SBATCH --error=train_logs/simsiam_%j.err
+#SBATCH --output=train_logs/FixMatch_%j.out
+#SBATCH --error=train_logs/FixMatch_%j.err
 #SBATCH --exclusive
 #SBATCH --requeue 
 
@@ -29,6 +29,7 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python SimSiam/simsiam_train.py --checkpoint-dir $HOME/DL21SP20/checkpoints/ --model-name simsiam --epochs=1
+python FixMatch_train.py --checkpoint-dir $HOME/DL21SP20/checkpoints/ --model-name FixMatch --epochs=1
 "
 #python eval.py --checkpoint-path $HOME/checkpoints/models/baseline.pth
+

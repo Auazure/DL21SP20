@@ -4,8 +4,8 @@
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl20
 #SBATCH --time=00:30:00
-#SBATCH --output=train_logs/barrowtwins_train_%j.out
-#SBATCH --error=train_logs/barrowtwins_train_%j.err
+#SBATCH --output=train_logs/barlowtwins_train_%j.out
+#SBATCH --error=train_logs/barlowtwins_train_%j.err
 #SBATCH --exclusive
 #SBATCH --requeue 
 
@@ -29,9 +29,9 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python $HOME/DL21SP20/BarrowTwins/barrowtwins_train.py --resnet-layers=18 \
---lambd=1.56e-2 \
---projector 2048-2048-2048 \
---epochs=1 \
---checkpoint-dir $HOME/DL21SP20/checkpoints/barrowtwins
+python $HOME/DL21SP20/BarlowTwins/barlowtwins_train.py --resnet-layers=50 \
+--lambd=3.9e-3 \
+--projector 8192-8192-8192 \
+--epochs=100 \
+--checkpoint-dir $HOME/DL21SP20/checkpoints/barlowtwins
 "

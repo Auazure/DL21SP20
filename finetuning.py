@@ -12,12 +12,12 @@ import os
 parser = argparse.ArgumentParser()
 
 # Input
-parser.add_argument('--pretrained-dir-file', default='./checkpoints/barrowtwins/resnet50.pth', type=Path,
+parser.add_argument('--pretrained-dir-file', default='./checkpoints/barlowtwins/resnet50.pth', type=Path,
                     help='path and filename to pretrained model')
 
 parser.add_argument('--model-name', default='resnet50', type=str,
                     help='pretrained model name')
-parser.add_argument('--pretrained-algo', default='barrowtwins', type=str,
+parser.add_argument('--pretrained-algo', default='barlowtwins', type=str,
                     help='pretrained model method')
 '''
 If feature_extract = False, the model is finetuned and all model parameters are updated. 
@@ -36,9 +36,9 @@ parser.add_argument('--data', default='/dataset', type=Path,
                     help='path to dataset')
 parser.add_argument('--workers', default=2, type=int, metavar='N',
                     help='number of data loader workers')
-parser.add_argument('--epochs', default=20, type=int, metavar='N',
+parser.add_argument('--epochs', default=30, type=int, metavar='N',
                     help='number of total epochs to run')
-parser.add_argument('--batch-size', default=256, type=int, metavar='N',
+parser.add_argument('--batch-size', default=512, type=int, metavar='N',
                     help='mini-batch size')
 parser.add_argument('--learning-rate', default=0.01, type=float, metavar='LR',
                     help='base learning rate')
@@ -46,10 +46,17 @@ parser.add_argument('--learning-rate', default=0.01, type=float, metavar='LR',
 # For saving model and outputs
 parser.add_argument('--checkpoint-dir', default='./checkpoints/finetuning', type=Path,
                     help='path to checkpoint directory')
-parser.add_argument('--checkpoint-file', default='barrowtwins_resnet50.pth', type=str,
+parser.add_argument('--checkpoint-file', default='barlowtwins_resnet50.pth', type=str,
                     help='file name of checkpoint')
 
 args = parser.parse_args()
+
+
+def main():
+    args = parser.parse_args()
+    assert os.path.join(args.pretrained_dir_file)
+    main_worker(0, args)
+
 
 
 def main():
@@ -85,16 +92,17 @@ def main_worker(gpu, args):
                                                         num_workers=args.workers)
 
     # load pre-trained model from checkpoint
-    model = pretrained_model(args.pretrained_algo, args.model_name, args.pretrained_dir_file, args.finetuning, args.num_classes)
+    model = ft_model(args.pretrained_algo, args.model_name, args.pretrained_dir_file, args.finetuning, args.num_classes)
     model.train()
     model.to(device)
 
     criterion = nn.CrossEntropyLoss()
     criterion.to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    # optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
 
     args.checkpoint_dir.mkdir(parents=True, exist_ok=True)
-    stats_file = open(args.checkpoint_dir / '{}_stats.txt'.format(args.checkpoint_file[:-4]), 'a', buffering=1)
+    stats_file = open(args.checkpoint_dir / 'finetuning_stats.txt', 'a', buffering=1)
     print(' '.join(sys.argv))
     print(' '.join(sys.argv), file=stats_file)
     best_validation_accuracy = 0
@@ -161,6 +169,7 @@ def set_parameter_requires_grad(model, finetuning):
             param.requires_grad = False
 
 
+
 def pretrained_model(pretrained_algo, model_name, pretrained_dir_file, finetuning, num_classes):
     if model_name == "resnet18":
         """ Resnet18
@@ -171,7 +180,7 @@ def pretrained_model(pretrained_algo, model_name, pretrained_dir_file, finetunin
         else:
             pre_model = torchvision.models.resnet18()
             n_in_features = pre_model.fc.in_features
-            if pretrained_algo in ['barrowtwins', 'simsiam']:
+            if pretrained_algo == 'barlowtwins':
                 pre_model.fc = nn.Identity()
             pre_model.load_state_dict(torch.load(pretrained_dir_file))
 
@@ -187,7 +196,7 @@ def pretrained_model(pretrained_algo, model_name, pretrained_dir_file, finetunin
         else:
             pre_model = torchvision.models.resnet50()
             n_in_features = pre_model.fc.in_features
-            if pretrained_algo in ['barrowtwins', 'simsiam']:
+            if pretrained_algo == 'barlowtwins':
                 pre_model.fc = nn.Identity()
             pre_model.load_state_dict(torch.load(pretrained_dir_file))
 
@@ -198,8 +207,19 @@ def pretrained_model(pretrained_algo, model_name, pretrained_dir_file, finetunin
     else:
         print("Invalid model name, exiting...")
         exit()
-
     return pre_model
+
+class ft_model(nn.Module):
+    def __init__(self, pretrained_algo, model_name, pretrained_dir_file, finetuning, num_classes):
+        super(ft_model, self).__init__()
+        self.pretrain = pretrained_model(pretrained_algo, model_name, pretrained_dir_file, finetuning, num_classes)
+        self.relu = nn.ReLU()
+        self.linear = nn.Linear(num_classes, num_classes)
+
+    def forward(self, x):
+        x = self.relu(self.pretrain(x))
+        outputs = self.linear(x)
+        return outputs
 
 print('Finish Training')
 

@@ -45,7 +45,7 @@ validation_transforms = transforms.Compose([
 path = ''
 train_dataset = CustomDataset(root=path+'/dataset', split='train', transform=train_transforms)
 validation_dataset = CustomDataset(root=path+'/dataset', split='val', transform=validation_transforms)
-BATCH_SIZE = 128 
+BATCH_SIZE = 512 
 
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=1)
 validation_dataloader = torch.utils.data.DataLoader(validation_dataset, batch_size=BATCH_SIZE, num_workers=1)
@@ -131,12 +131,12 @@ for i in range(N_EPOCHS):
     print('Epoch: {}, Train Accuracy: {}, Vald Accuracy: {}'.format(i+1, round(train_accuracy,3), round(validation_accuracy,3)))
 #     pbar.set_postfix({'train_loss': mean_train_loss, 'validation_loss': mean_validation_loss, 'train_accuracy': train_accuracy, 'validation_accuracy': validation_accuracy})
     
-    
+    # os.makedirs(args.checkpoint_dir, exist_ok=True)
+    torch.save(model.state_dict(), os.path.join(args.checkpoint_dir, 'baseline.pth'))
+    print("Saved checkpoint to {os.path.join(args.checkpoint_dir, 'baseline.pth')}")
     
     
     
 print('Finish Training')
-os.makedirs(args.checkpoint_dir, exist_ok=True)
-torch.save(model.state_dict(), os.path.join(args.checkpoint_dir, 'baseline.path'))
-print("Saved checkpoint to {os.path.join(args.checkpoint_dir, 'baseline.path')}")
+
       
