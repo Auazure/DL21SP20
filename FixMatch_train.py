@@ -70,7 +70,7 @@ else:
 
 
 model = resnet18() if args.net_size=='18' else resnet50()
-model.fc = nn.Linear(2024, 800)
+model.fc = nn.Linear(2048, 800)
 model.to(device)
 
 optimizer = torch.optim.SGD(model.parameters(), lr=0.03,momentum=0.9, nesterov=True)
