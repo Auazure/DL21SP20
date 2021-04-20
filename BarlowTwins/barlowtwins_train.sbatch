@@ -3,7 +3,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl20
-#SBATCH --time=00:30:00
+#SBATCH --time=04:00:00
 #SBATCH --output=train_logs/barlowtwins_train_%j.out
 #SBATCH --error=train_logs/barlowtwins_train_%j.err
 #SBATCH --exclusive

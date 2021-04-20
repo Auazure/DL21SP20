@@ -40,7 +40,7 @@ parser.add_argument('--workers', default=2, type=int, metavar='N',
                     help='number of data loader workers') # Real Default 8
 parser.add_argument('--epochs', default=20, type=int, metavar='N',
                     help='number of total epochs to run') # Real Default  300
-parser.add_argument('--batch-size', default=512, type=int, metavar='N',
+parser.add_argument('--batch-size', default=1024, type=int, metavar='N',
                     help='mini-batch size') # Real Default 4096
 
 # For optimizer

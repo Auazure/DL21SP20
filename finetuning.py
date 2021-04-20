@@ -52,12 +52,6 @@ parser.add_argument('--checkpoint-file', default='barlowtwins_resnet50.pth', typ
 args = parser.parse_args()
 
 
-def main():
-    args = parser.parse_args()
-    assert os.path.join(args.pretrained_dir_file)
-    main_worker(0, args)
-
-
 
 def main():
     args = parser.parse_args()
@@ -102,7 +96,7 @@ def main_worker(gpu, args):
     optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9)
 
     args.checkpoint_dir.mkdir(parents=True, exist_ok=True)
-    stats_file = open(args.checkpoint_dir / 'finetuning_stats.txt', 'a', buffering=1)
+    stats_file = open(args.checkpoint_dir / '{}_stats.txt'.format(args.checkpoint_file[:-4]), 'a', buffering=1)
     print(' '.join(sys.argv))
     print(' '.join(sys.argv), file=stats_file)
     best_validation_accuracy = 0

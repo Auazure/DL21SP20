@@ -3,7 +3,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl20
-#SBATCH --time=00:10:00
+#SBATCH --time=01:00:00
 #SBATCH --output=train_logs/finetuning_%j.out
 #SBATCH --error=train_logs/finetuning_%j.err
 #SBATCH --exclusive
@@ -34,5 +34,5 @@ python finetuning.py --pretrained-dir-file $HOME/DL21SP20/checkpoints/barlowtwin
 --pretrained-algo barlowtwins \
 --checkpoint-dir $HOME/DL21SP20/checkpoints/finetuning \
 --checkpoint-file barlowtwins_resnet50_epochs70.pth \
---epochs=5
+--epochs=30
 "
