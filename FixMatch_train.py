@@ -50,7 +50,7 @@ validation_transforms = transforms.Compose([
                                     normalize,
                                 ])
 BATCH_SIZE = 64 # TODO
-mu = 4
+mu = 7
 PATH = ''
 # PATH = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
 
@@ -126,14 +126,16 @@ for epoch in range(EPOCHS):
 		    (inputs_u_w, inputs_u_s), _ = unlabeled_iter.next()
 
 
-		batch_size = inputs_x.shape[0]
+		batch_size_l = inputs_x.shape[0]
+		batch_size_u = inputs_u_w.shape[0]
+
 
 		inputs = torch.cat([inputs_x, inputs_u_w, inputs_u_s]).to(device)
 		logits = model(inputs)
 
-		logits_labeled = logits[:batch_size].to(device)
-		logits_u_w = logits[batch_size:(mu+1)*batch_size].to(device)
-		logits_u_s = logits[batch_size*(mu+1):].to(device)
+		logits_labeled = logits[:batch_size_l].to(device)
+		logits_u_w = logits[batch_size_l:batch_size_l+batch_size_u].to(device)
+		logits_u_s = logits[batch_size_l+batch_size_u:].to(device)
 
 		Lx = F.cross_entropy(logits_labeled, targets_x, reduction='mean')
 		pseudo_label = torch.softmax(logits_u_w.detach()/temperature, dim=-1).to(device)
@@ -149,8 +151,8 @@ for epoch in range(EPOCHS):
 		_, y_l_labeled = torch.max(torch.softmax(logits_labeled.detach()/temperature, dim=-1), dim=-1)
 		_, y_u_labeled = torch.max(torch.softmax(logits_u_s.detach()/temperature, dim=-1), dim=-1)
 
-		l_acc = (y_l_labeled==targets_x.to(device)).sum()/batch_size
-		u_acc = (y_u_labeled==targets_u.to(device)).sum()/batch_size/mu
+		l_acc = (y_l_labeled==targets_x.to(device)).sum()/batch_size_l
+		u_acc = (y_u_labeled==targets_u.to(device)).sum()/batch_size_u
 		mean_l_loss += Lx.item()
 		mean_u_loss += Lu.item()
 		mean_l_acc += l_acc.item()
@@ -200,6 +202,7 @@ for epoch in range(EPOCHS):
 	with torch.no_grad():
 		for batch in validation_dataloader:
 			inputs_x, targets_x = batch
+			batch_size = inputs.shape[0]
 			logits = model(inputs_x.to(device))
 			loss = F.cross_entropy(logits, targets_x.to(device), reduction='mean')
 
