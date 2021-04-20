@@ -49,7 +49,7 @@ validation_transforms = transforms.Compose([
                                     transforms.ToTensor(), 
                                     normalize,
                                 ])
-BATCH_SIZE = 128 # TODO
+BATCH_SIZE = 64 # TODO
 mu = 4
 PATH = ''
 # PATH = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
