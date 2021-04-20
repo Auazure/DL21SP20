@@ -1,18 +1,14 @@
-import argparse
 import os
-import random
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from dataloader import CustomDataset
-from FM.dataset.cifar import TransformFixMatch,DATASET_GETTERS
-from tqdm.notebook import tqdm
+from FM.dataset.cifar import TransformFixMatch
 import argparse
 from torchvision.models import resnet18, resnet50
+import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--checkpoint-dir', type=str, default='checkpoints/')
@@ -50,7 +46,7 @@ validation_transforms = transforms.Compose([
                                     normalize,
                                 ])
 BATCH_SIZE = 64 # TODO
-mu = 7
+mu = 6
 PATH = ''
 # PATH = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
 
@@ -69,8 +65,8 @@ else:
     device = torch.device("cpu")
 
 
-model = resnet18() if args.net_size=='18' else resnet50()
-model.fc = nn.Linear(2048, 800)
+model = resnet50() if args.net_size==50 else resnet18()
+model.fc = nn.Linear(2048, 800) if args.net_size==50 else nn.Linear(512,800)
 model.to(device)
 
 optimizer = torch.optim.SGD(model.parameters(), lr=0.03,momentum=0.9, nesterov=True)
@@ -100,6 +96,8 @@ model.train()
 
 
 for epoch in range(EPOCHS):
+
+	start = time.time()
 	print('Current Epoch {}'.format(epoch))
 	mean_l_loss = 0
 	mean_u_loss = 0
@@ -111,20 +109,21 @@ for epoch in range(EPOCHS):
 	cur_l_acc = 0
 	cur_u_acc = 0
 	for idx in range(eval_step):
+		# print('cur step', idx)
 		# Get Data
 		model.zero_grad()
 		try:
-		    inputs_x, targets_x = labeled_iter.next()
+			inputs_x, targets_x = labeled_iter.next()
 		except:
-		    labeled_iter = iter(labeled_trainloader)
-		    inputs_x, targets_x = labeled_iter.next()
+			labeled_iter = iter(labeled_trainloader)
+			inputs_x, targets_x = labeled_iter.next()
 		targets_x = targets_x.to(device)
 		try:
-		    (inputs_u_w, inputs_u_s), _ = unlabeled_iter.next()
+			(inputs_u_w, inputs_u_s), _ = unlabeled_iter.next()
 		except:
-		    unlabeled_iter = iter(unlabeled_trainloader)
-		    (inputs_u_w, inputs_u_s), _ = unlabeled_iter.next()
-
+			unlabeled_iter = iter(unlabeled_trainloader)
+			(inputs_u_w, inputs_u_s), _ = unlabeled_iter.next()
+		# print('loaded data')
 
 		batch_size_l = inputs_x.shape[0]
 		batch_size_u = inputs_u_w.shape[0]
@@ -132,7 +131,7 @@ for epoch in range(EPOCHS):
 
 		inputs = torch.cat([inputs_x, inputs_u_w, inputs_u_s]).to(device)
 		logits = model(inputs)
-
+		# print('forward done')
 		logits_labeled = logits[:batch_size_l].to(device)
 		logits_u_w = logits[batch_size_l:batch_size_l+batch_size_u].to(device)
 		logits_u_s = logits[batch_size_l+batch_size_u:].to(device)
@@ -145,9 +144,10 @@ for epoch in range(EPOCHS):
 		                      reduction='none') * mask).mean()
 
 		loss = Lx + lambda_un * Lu
+		# print('loss computed')
 		loss.backward()
 		optimizer.step()
-
+		# print('backward done')
 		_, y_l_labeled = torch.max(torch.softmax(logits_labeled.detach()/temperature, dim=-1), dim=-1)
 		_, y_u_labeled = torch.max(torch.softmax(logits_u_s.detach()/temperature, dim=-1), dim=-1)
 
@@ -168,18 +168,9 @@ for epoch in range(EPOCHS):
 			if idx >= period:
 				print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}'.
 					format(cur_l_loss/period, cur_u_loss/period, cur_l_acc/period, cur_u_acc/period))
-			# print('Label Loss: ', cur_l_loss/period)
-			# print('Unlabel Loss: ', cur_u_loss/period)
-			# print('Label Acc: ', cur_l_acc/period)
-			# print('Unlabel Acc: ', cur_u_acc/period)
 			else:
 				print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}'.
 					format(cur_l_loss, cur_u_loss, cur_l_acc, cur_u_acc))
-
-			# print('Label Loss: ', cur_l_loss)
-			# print('Unlabel Loss: ', cur_u_loss)
-			# print('Label Acc: ', cur_l_acc)
-			# print('Unlabel Acc: ', cur_u_acc)
 			print('---------------')
 
 			cur_l_loss =0
@@ -213,17 +204,14 @@ for epoch in range(EPOCHS):
 			val_acc += correct.item()
 	val_final_loss = val_loss/len(validation_dataloader)    
 	val_final_acc = val_acc/len(validation_dataloader)   
-
+	end = time.time()
 	print('###############')
 	print('###############')
 	print('Epoch Info:')
+	print('Time taken: {}'.format(round(end - start,2)))
 	print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}'.
 	      		format(mean_l_loss, mean_u_loss, mean_l_acc, mean_u_acc))
-	        
-	# print('Label Loss: ', mean_l_loss)
-	# print('Unlabel Loss: ', mean_u_loss)
-	# print('Label Acc: ', mean_l_acc)
-	# print('Unlabel Acc: ', mean_u_acc)
+
 	print('---------------')
 	print('Val Info')
 	print('Epoch Val Loss: {}, Epoch Val Acc: {}'.format(val_final_loss, val_final_acc))
