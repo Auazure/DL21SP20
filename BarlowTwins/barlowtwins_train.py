@@ -40,7 +40,7 @@ parser.add_argument('--workers', default=2, type=int, metavar='N',
                     help='number of data loader workers') # Real Default 8
 parser.add_argument('--epochs', default=20, type=int, metavar='N',
                     help='number of total epochs to run') # Real Default  300
-parser.add_argument('--batch-size', default=256, type=int, metavar='N',
+parser.add_argument('--batch-size', default=512, type=int, metavar='N',
                     help='mini-batch size') # Real Default 4096
 
 # For optimizer
@@ -60,7 +60,7 @@ parser.add_argument('--scale-loss', default=1 / 32, type=float,
 # For saving model and outputs
 parser.add_argument('--print-freq', default=100, type=int, metavar='N',
                     help='print frequency')
-parser.add_argument('--checkpoint-dir', default='./checkpoints/barrowtwins', type=Path,
+parser.add_argument('--checkpoint-dir', default='./checkpoints/barlowtwins', type=Path,
                     help='path to checkpoint directory')
 
 
@@ -165,7 +165,7 @@ def main_worker(gpu, args):
     # if args.rank == 0:
     # save final model
     torch.save(model.backbone.state_dict(),
-               args.checkpoint_dir / 'resnet_{}.pth'.format(args.resnet_layers))
+               args.checkpoint_dir / 'resnet{}.pth'.format(args.resnet_layers))
 
 
 def adjust_learning_rate(args, optimizer, loader, step):

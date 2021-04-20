@@ -1,0 +1,2 @@
+C:/Users/HedyHe/Documents/04_NYU/9999_projects/2572_project/DL21SP20/BarrowTwins/barrowtwins_train.py
+C:/Users/HedyHe/Documents/04_NYU/9999_projects/2572_project/DL21SP20/BarrowTwins/barrowtwins_train.py
