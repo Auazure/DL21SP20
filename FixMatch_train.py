@@ -50,11 +50,12 @@ validation_transforms = transforms.Compose([
                                     normalize,
                                 ])
 BATCH_SIZE = 128 # TODO
+mu = 4
 PATH = ''
 # PATH = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
 
 unlabeled_dataset = CustomDataset(PATH+'/dataset', 'unlabeled', transform=transform_unlabled)
-unlabeled_trainloader = torch.utils.data.DataLoader(unlabeled_dataset, batch_size=BATCH_SIZE*5, shuffle=True, num_workers=1)
+unlabeled_trainloader = torch.utils.data.DataLoader(unlabeled_dataset, batch_size=BATCH_SIZE*mu, shuffle=True, num_workers=1)
 
 labeled_dataset = CustomDataset(PATH+'/dataset', 'train', transform=transform_labeled)
 labeled_trainloader = torch.utils.data.DataLoader(labeled_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=1)
@@ -149,7 +150,7 @@ for epoch in range(EPOCHS):
 		_, y_u_labeled = torch.max(torch.softmax(logits_u_s.detach()/temperature, dim=-1), dim=-1)
 
 		l_acc = (y_l_labeled==targets_x.to(device)).sum()/batch_size
-		u_acc = (y_u_labeled==targets_u.to(device)).sum()/batch_size
+		u_acc = (y_u_labeled==targets_u.to(device)).sum()/batch_size/mu
 		mean_l_loss += Lx.item()
 		mean_u_loss += Lu.item()
 		mean_l_acc += l_acc.item()
