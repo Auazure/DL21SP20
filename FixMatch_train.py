@@ -70,7 +70,7 @@ else:
 
 
 model = resnet18() if args.net_size=='18' else resnet50()
-model.fc = nn.Linear(512, 800)
+model.fc = nn.Linear(2024, 800)
 model.to(device)
 
 optimizer = torch.optim.SGD(model.parameters(), lr=0.03,momentum=0.9, nesterov=True)
@@ -132,8 +132,8 @@ for epoch in range(EPOCHS):
 		logits = model(inputs)
 
 		logits_labeled = logits[:batch_size].to(device)
-		logits_u_w = logits[batch_size:2*batch_size].to(device)
-		logits_u_s = logits[batch_size*2:].to(device)
+		logits_u_w = logits[batch_size:(mu+1)*batch_size].to(device)
+		logits_u_s = logits[batch_size*(mu+1):].to(device)
 
 		Lx = F.cross_entropy(logits_labeled, targets_x, reduction='mean')
 		pseudo_label = torch.softmax(logits_u_w.detach()/temperature, dim=-1).to(device)
