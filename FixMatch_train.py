@@ -193,7 +193,7 @@ for epoch in range(EPOCHS):
 	with torch.no_grad():
 		for batch in validation_dataloader:
 			inputs_x, targets_x = batch
-			batch_size = inputs.shape[0]
+			batch_size = inputs_x.shape[0]
 			logits = model(inputs_x.to(device))
 			loss = F.cross_entropy(logits, targets_x.to(device), reduction='mean')
 
