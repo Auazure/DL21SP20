@@ -34,5 +34,5 @@ python finetuning.py --pretrained-dir-file $HOME/DL21SP20/checkpoints/barlowtwin
 --pretrained-algo barlowtwins \
 --checkpoint-dir $HOME/DL21SP20/checkpoints/finetuning \
 --checkpoint-file barlowtwins_resnet50_epochs70.pth \
---epochs=30
+--epochs=40
 "
