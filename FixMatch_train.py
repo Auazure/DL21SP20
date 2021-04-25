@@ -103,11 +103,13 @@ for epoch in range(EPOCHS):
 	mean_u_loss = 0
 	mean_l_acc = 0
 	mean_u_acc = 0
+	mean_mask = 0
 
 	cur_l_loss = 0
 	cur_u_loss = 0
 	cur_l_acc = 0
 	cur_u_acc = 0
+	cur_mask = 0
 	for idx in range(eval_step):
 		# print('cur step', idx)
 		# Get Data
@@ -153,30 +155,35 @@ for epoch in range(EPOCHS):
 
 		l_acc = (y_l_labeled==targets_x.to(device)).sum()/batch_size_l
 		u_acc = (y_u_labeled==targets_u.to(device)).sum()/batch_size_u
+		mask_percent = mask.sum()/batch_size_u
+
 		mean_l_loss += Lx.item()
 		mean_u_loss += Lu.item()
 		mean_l_acc += l_acc.item()
 		mean_u_acc += u_acc.item()
+		mean_mask += mask_percent.item()
 
 		cur_l_loss += Lx.item()
 		cur_u_loss += Lu.item()
 		cur_l_acc += l_acc.item()
 		cur_u_acc += u_acc.item()
+		cur_mask += mask_percent.item()
 
 		if idx%period==0:
 			print('---------------')
 			if idx >= period:
-				print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}'.
-					format(cur_l_loss/period, cur_u_loss/period, cur_l_acc/period, cur_u_acc/period))
+				print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}, Mask Percent'.
+					format(cur_l_loss/period, cur_u_loss/period, cur_l_acc/period, cur_u_acc/period, cur_mask/period))
 			else:
-				print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}'.
-					format(cur_l_loss, cur_u_loss, cur_l_acc, cur_u_acc))
+				print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}, Mask Percent'.
+					format(cur_l_loss, cur_u_loss, cur_l_acc, cur_u_acc, cur_mask))
 			print('---------------')
 
 			cur_l_loss =0
 			cur_u_loss =0
 			cur_l_acc =0
 			cur_u_acc =0
+			cur_mask = 0
 			# if idx >=period:
 			torch.save({
 				'model_resnet_state_dict': model.state_dict(),
@@ -187,6 +194,7 @@ for epoch in range(EPOCHS):
 	mean_u_loss /= eval_step
 	mean_l_acc /= eval_step
 	mean_u_acc /= eval_step
+	mean_mask /= eval_step
 
 	val_loss = 0
 	val_acc = 0
@@ -209,8 +217,8 @@ for epoch in range(EPOCHS):
 	print('###############')
 	print('Epoch Info:')
 	print('Time taken: {}'.format(round(end - start,2)))
-	print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}'.
-	      		format(mean_l_loss, mean_u_loss, mean_l_acc, mean_u_acc))
+	print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}, Mask Percent'.
+	      		format(mean_l_loss, mean_u_loss, mean_l_acc, mean_u_acc, mean_mask))
 
 	print('---------------')
 	print('Val Info')
