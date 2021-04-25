@@ -4,8 +4,8 @@
 #SBATCH --partition=n1s8-t4-1
 #SBATCH --account=dl20
 #SBATCH --time=00:10:00
-#SBATCH --output=leaderboard/leaderboard2/eval_%j.out
-#SBATCH --error=leaderboard/leaderboard2/eval_%j.err
+#SBATCH --output=eval_%j.out
+#SBATCH --error=eval_%j.err
 #SBATCH --exclusive
 #SBATCH --requeue 
 
