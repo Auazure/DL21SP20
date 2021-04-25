@@ -21,7 +21,7 @@ class ft_model(nn.Module):
         return outputs
 
 def get_model():
-    return models.resnet18(num_classes=800)
+    return ft_model(num_classes=800)
 
 eval_transform = transforms.Compose([
     transforms.ToTensor(),
