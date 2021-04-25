@@ -29,5 +29,5 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python eval.py --checkpoint-path $HOME/DL21SP20/checkpoints/finetuning/barlowtwins_resnet50_epochs100.pth 
+python $HOME/DL21SP20/leaderboard/leaderboard2/eval.py --checkpoint-path $HOME/DL21SP20/leaderboard/leaderboard2/model.pth 
 "
