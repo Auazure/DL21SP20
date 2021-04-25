@@ -49,6 +49,18 @@ BATCH_SIZE = 64 # TODO
 mu = 6
 PATH = ''
 # PATH = '/Users/colinwan/Desktop/NYU_MSDS/2572/FinalProject/DL21SP20'
+class fullmodel(nn.Module):
+    def __init__(self, num_classes = 800):
+        super(fullmodel, self).__init__()
+        self.pretrain = resnet50()
+        self.pretrain.fc = nn.Linear(self.pretrain.fc.in_features, num_classes)
+        self.relu = nn.ReLU()
+        self.linear = nn.Linear(num_classes, num_classes)
+
+    def forward(self, x):
+        x = self.relu(self.pretrain(x))
+        outputs = self.linear(x)
+        return outputs
 
 unlabeled_dataset = CustomDataset(PATH+'/dataset', 'unlabeled', transform=transform_unlabled)
 unlabeled_trainloader = torch.utils.data.DataLoader(unlabeled_dataset, batch_size=BATCH_SIZE*mu, shuffle=True, num_workers=1)
@@ -65,8 +77,9 @@ else:
     device = torch.device("cpu")
 
 
-model = resnet50() if args.net_size==50 else resnet18()
-model.fc = nn.Linear(2048, 800) if args.net_size==50 else nn.Linear(512,800)
+# model = resnet50() if args.net_size==50 else resnet18()
+model = fullmodel()
+# model.fc = nn.Linear(2048, 800) if args.net_size==50 else nn.Linear(512,800)
 model.to(device)
 
 optimizer = torch.optim.SGD(model.parameters(), lr=0.03,momentum=0.9, nesterov=True)
