@@ -172,10 +172,10 @@ for epoch in range(EPOCHS):
 		if idx%period==0:
 			print('---------------')
 			if idx >= period:
-				print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}, Mask Percent'.
+				print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}, Mask Percent: {}'.
 					format(cur_l_loss/period, cur_u_loss/period, cur_l_acc/period, cur_u_acc/period, cur_mask/period))
 			else:
-				print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}, Mask Percent'.
+				print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}, Mask Percent: {}'.
 					format(cur_l_loss, cur_u_loss, cur_l_acc, cur_u_acc, cur_mask))
 			print('---------------')
 
@@ -217,7 +217,7 @@ for epoch in range(EPOCHS):
 	print('###############')
 	print('Epoch Info:')
 	print('Time taken: {}'.format(round(end - start,2)))
-	print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}, Mask Percent'.
+	print('Label Loss: {}, Unlabel Loss: {}, Label Acc: {}, Unlabel Acc: {}, Mask Percent: {}'.
 	      		format(mean_l_loss, mean_u_loss, mean_l_acc, mean_u_acc, mean_mask))
 
 	print('---------------')
