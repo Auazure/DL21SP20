@@ -11,6 +11,7 @@ team_id = 20
 team_name = "abc123"
 email_address = "cj2164@nyu.edu"
 
+
 class Normalize(nn.Module):
 
     def __init__(self, power=2):
@@ -21,6 +22,7 @@ class Normalize(nn.Module):
         norm = x.pow(self.power).sum(1, keepdim=True).pow(1. / self.power)
         out = x.div(norm)
         return out
+
 
 class Bottleneck(nn.Module):
     expansion = 4
@@ -60,9 +62,10 @@ class Bottleneck(nn.Module):
 
         return out
 
+
 class ResNet(nn.Module):
 
-    def __init__(self, block, layers, mlp=False, low_dim=128, in_channel=3, width=1, num_class=1000):
+    def __init__(self, block, layers, mlp=False, low_dim=128, in_channel=3, width=1, num_class=800):
         self.inplanes = 64
         super(ResNet, self).__init__()
         self.conv1 = nn.Conv2d(in_channel, 64, kernel_size=7, stride=2, padding=3,
@@ -77,7 +80,8 @@ class ResNet(nn.Module):
         self.layer2 = self._make_layer(block, self.base * 2, layers[1], stride=2)
         self.layer3 = self._make_layer(block, self.base * 4, layers[2], stride=2)
         self.layer4 = self._make_layer(block, self.base * 8, layers[3], stride=2)
-        self.avgpool = nn.AvgPool2d(7, stride=1)
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        # self.avgpool = nn.AvgPool2d(7, stride=1)
 
         self.classifier = nn.Linear(self.base * 8 * block.expansion, num_class)
         self.l2norm = Normalize(2)
@@ -138,6 +142,7 @@ class ResNet(nn.Module):
         feat = self.l2norm(feat)
         return out, feat
 
+
 def resnet50(**kwargs):
     """Constructs a ResNet-50 model.
     """
@@ -148,7 +153,6 @@ def resnet50(**kwargs):
 class Model(nn.Module):
 
     def __init__(self, base_encoder, args, width):
-
         super(Model, self).__init__()
 
         self.K = args.K
@@ -180,19 +184,20 @@ class Model(nn.Module):
         outputs_x, _ = self.encoder(x)
         return outputs_x
 
+
 parser = argparse.ArgumentParser(description='CoMatch Evaluation')
-parser.add_argument('--gpu', default=0, type=int,
-                    help='GPU id to use.')
 parser.add_argument('--low-dim', default=128, type=int, help='feature dimension')
 parser.add_argument('--K', default=30000, type=int, help='size of memory bank and momentum queue')
 parser.add_argument('--num-class', default=800, type=int)
 args, unknown = parser.parse_known_args()
 
+
 def get_model():
     model = Model(resnet50, args, 1)
     return model
 
+
 eval_transform = transforms.Compose([
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
-    ])
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+])
