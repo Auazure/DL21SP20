@@ -24,6 +24,38 @@ class Normalize(nn.Module):
         return out
 
 
+class BasicBlock(nn.Module):
+    expansion = 1
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None):
+        super(BasicBlock, self).__init__()
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = conv3x3(planes, planes)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.downsample = downsample
+        self.stride = stride
+
+    def forward(self, x):
+        residual = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+
+        out = self.conv2(out)
+        out = self.bn2(out)
+
+        if self.downsample is not None:
+            residual = self.downsample(x)
+
+        out += residual
+        out = self.relu(out)
+
+        return out
+
+
 class Bottleneck(nn.Module):
     expansion = 4
 
@@ -150,34 +182,10 @@ def resnet50(**kwargs):
     return model
 
 
-class Model(nn.Module):
-
+class Encoder(nn.Module):
     def __init__(self, base_encoder, args, width):
-        super(Model, self).__init__()
-
-        self.K = args.K
-
+        super(Encoder, self).__init__()
         self.encoder = base_encoder(num_class=args.num_class, mlp=True, low_dim=args.low_dim, width=width)
-        self.m_encoder = base_encoder(num_class=args.num_class, mlp=True, low_dim=args.low_dim, width=width)
-
-        for param, param_m in zip(self.encoder.parameters(), self.m_encoder.parameters()):
-            param_m.data.copy_(param.data)  # initialize
-            param_m.requires_grad = False  # not update by gradient
-
-        # queue to store momentum feature for strong augmentations
-        self.register_buffer("queue_s", torch.randn(args.low_dim, self.K))
-        self.queue_s = F.normalize(self.queue_s, dim=0)
-        self.register_buffer("queue_ptr_s", torch.zeros(1, dtype=torch.long))
-        # queue to store momentum probs for weak augmentations (unlabeled)
-        self.register_buffer("probs_u", torch.zeros(args.num_class, self.K))
-
-        # queue (memory bank) to store momentum feature and probs for weak augmentations (labeled and unlabeled)
-        self.register_buffer("queue_w", torch.randn(args.low_dim, self.K))
-        self.register_buffer("queue_ptr_w", torch.zeros(1, dtype=torch.long))
-        self.register_buffer("probs_xu", torch.zeros(args.num_class, self.K))
-
-        # for distribution alignment
-        self.hist_prob = []
 
     def forward(self, x):
         x = x.cuda()
@@ -187,13 +195,12 @@ class Model(nn.Module):
 
 parser = argparse.ArgumentParser(description='CoMatch Evaluation')
 parser.add_argument('--low-dim', default=128, type=int, help='feature dimension')
-parser.add_argument('--K', default=30000, type=int, help='size of memory bank and momentum queue')
 parser.add_argument('--num-class', default=800, type=int)
 args, unknown = parser.parse_known_args()
 
 
 def get_model():
-    model = Model(resnet50, args, 1)
+    model = Encoder(resnet50, args, 1)
     return model
 
 
