@@ -42,6 +42,7 @@ sbatch finetuning.sbatch
 
 ## Labeling images
 Get 12800 images which should be labeled through calculating entropy through fine-tuned Barlow-Twins model. 
+* You will get "request_20.csv" after the successfully executed the code. 
 ```
 sbatch labeling_request.sbatch
 ```

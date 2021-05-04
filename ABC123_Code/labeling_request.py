@@ -103,12 +103,7 @@ unlabeled_entropy, labeled_entropy = main_worker(0, args)
 unlabeled_entropy, labeled_entropy = np.array(unlabeled_entropy), np.array(labeled_entropy)
 max_unlabeled_entropy, max_labeled_entropy = unlabeled_entropy.argsort()[::-1], labeled_entropy.argsort()[::-1]
 max_unlabeled_entropy_selected = max_unlabeled_entropy[:12800]
-max_labeled_entropy_selected = max_labeled_entropy[:4000]
-max_unlabeled_entropy_selected.sort()
-request_20 = pd.Series(max_unlabeled_entropy_selected).map(lambda x: str(x)+".png")
-with open('./request_20.csv','w') as f:
-    for l in request_20:
-         f.write(l+',\n')
+# max_labeled_entropy_selected = max_labeled_entropy[:4000]
 max_unlabeled_entropy_selected.sort()
 request_20 = pd.Series(max_unlabeled_entropy_selected).map(lambda x: str(x)+".png")
 with open('./request_20.csv','w') as f:
