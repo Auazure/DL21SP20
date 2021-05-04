@@ -20,7 +20,7 @@ python Train_CoMatch.py --epochs <NEPOCH> --data <PATH of DATASET> --exp_dir <PA
 ```
 
 # Labeling Request
-Note, when we submitted our labeling request, we haven't gotten outstanding CoMatch outcome. Hence, the labeling is based on Barlow Twins.
+Note: when we submitted our labeling request, we haven't gotten outstanding CoMatch outcome. Hence, the labeling is based on Barlow Twins.
 ## Barlow-Twins
 The original source of PyTorch implementation is [here](https://github.com/facebookresearch/barlowtwins).
 
@@ -28,6 +28,7 @@ The original source of PyTorch implementation is [here](https://github.com/faceb
 Train the Barlow-Twins model with unlabeled dataset. 
 * You can monitor the training progress through "stats_50.txt" file produced by this code.
 * You will get "resnet50.pth", "checkpoint_50.pth" after the successfully executed the code. 
+Note: you may need to change "cd $HOME/DL21SP20/ABC123_Code" to you own folder in every ".sbatch" file below, before runing the those files.
 ```
 sbatch barlowtwins_train.sbatch
 ```
