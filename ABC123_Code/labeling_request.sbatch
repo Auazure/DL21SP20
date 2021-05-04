@@ -20,7 +20,7 @@ export SINGULARITY_CACHEDIR=/tmp/$USER
 cp -rp /scratch/DL21SP/student_dataset.sqsh /tmp
 echo "Dataset is copied to /tmp"
 
-cd $HOME/DL21SP20
+cd $HOME/DL21SP20/ABC123_Code
 
 singularity exec --nv \
 --bind /scratch \
@@ -30,6 +30,6 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python labeling_request.py --checkpoint-dir $HOME/DL21SP20/checkpoints/finetuning \
---checkpoint-file barlowtwins_resnet50_epochs100.pth \
+python labeling_request.py --checkpoint-dir ./checkpoints \
+--checkpoint-file finetuned_barlowtwins_resnet50_epochs100.pth \
 "
