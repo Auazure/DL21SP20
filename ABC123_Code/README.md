@@ -28,7 +28,11 @@ The original source of PyTorch implementation is [here](https://github.com/faceb
 Train the Barlow-Twins model with unlabeled dataset. 
 * You can monitor the training progress through "stats_50.txt" file produced by this code.
 * You will get "resnet50.pth", "checkpoint_50.pth" after the successfully executed the code. 
-Note: you may need to change "cd $HOME/DL21SP20/ABC123_Code" to you own folder in every ".sbatch" file below, before runing the those files.
+
+Note: before running the those files, you **should** change "cd $HOME/DL21SP20/code_20" to you own folder in every ".sbatch" file below.
+
+Note: before running the those files, you **may** change checkpoints' folder and name based on your preference. 
+
 ```
 sbatch barlowtwins_train.sbatch
 ```
