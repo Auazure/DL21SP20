@@ -31,5 +31,5 @@ singularity exec --nv \
 source /ext3/env.sh
 conda activate dev
 python labeling_request.py --checkpoint-dir ./checkpoints \
---checkpoint-file finetuned_barlowtwins_resnet50_epochs100.pth \
+--checkpoint-file finetuned_barlowtwins_resnet50_epochs100.pth
 "

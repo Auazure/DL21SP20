@@ -29,7 +29,7 @@ singularity exec --nv \
 /bin/bash -c "
 source /ext3/env.sh
 conda activate dev
-python finetuning.py --pretrained-dir-file ./checkpoints/barlowtwins_resnet50_epochs100.pth \
+python finetuning.py --pretrained-dir-file ./checkpoints/resnet50.pth \
 --checkpoint-dir ./checkpoints \
 --checkpoint-file finetuned_barlowtwins_resnet50_epochs100.pth \
 "

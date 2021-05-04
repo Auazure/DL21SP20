@@ -21,7 +21,27 @@ python Train_CoMatch.py --epochs <NEPOCH> --data <PATH of DATASET> --exp_dir <PA
 
 # Labeling Request
 Note, when we submitted our labeling request, we haven't gotten outstanding CoMatch outcome. Hence, the labeling is based on Barlow Twins.
-## 1.1 Pre-trained Barlow Twins
-This is an  PyTorch implementation of [CoMatch: Semi-supervised Learning with Contrastive Graph Regularization](https://arxiv.org/abs/2011.11183).
+## Barlow-Twins
+The original source of PyTorch implementation is [here](https://github.com/facebookresearch/barlowtwins).
 
-The original source of PyTorch implementation is [here](https://github.com/salesforce/CoMatch).
+### 1) Pre-trained 
+Train the Barlow-Twins model with unlabeled dataset. 
+* You can monitor the training progress through "stats_50.txt" file produced by this code.
+* You will get "resnet50.pth", "checkpoint_50.pth" after the successfully executed the code. 
+```
+sbatch barlowtwins_train.sbatch
+```
+
+### 2) Fine-tune 
+Fine-tune the Barlow-Twins pretrained model with the original label datasets. 
+* You can monitor the training progress through "finetuned_barlowtwins_resnet50_epochs100_stats.txt" file produced by this code.
+* You will get "finetuned_barlowtwins_resnet50_epochs100.pth" after the successfully executed the code.  
+```
+sbatch finetuning.sbatch
+```
+
+## Labeling images
+Get 12800 images which should be labeled through calculating entropy through fine-tuned Barlow-Twins model. 
+```
+sbatch labeling_request.sbatch
+```
